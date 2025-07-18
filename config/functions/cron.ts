@@ -1,64 +1,59 @@
 /**
- * Cron job configuration
+ * Cron jobs configuration
  */
 
 export default {
   /**
-   * An asynchronous register function that runs before
-   * your application is initialized.
-   *
-   * This gives you an opportunity to extend code.
+   * Cron jobs
    */
-  register(/*{ strapi }*/) {},
-
-  /**
-   * An asynchronous bootstrap function that runs before
-   * your application gets started.
-   *
-   * This gives you an opportunity to set up your data model,
-   * run jobs, or perform some special logic.
-   */
-  bootstrap(/*{ strapi }*/) {},
-
-  /**
-   * An asynchronous destroy function that runs before
-   * your application shuts down.
-   *
-   * This gives you an opportunity to gracefully close connections,
-   * clean up resources, or perform some special logic.
-   */
-  destroy(/*{ strapi }*/) {},
-
-  /**
-   * Configure cron jobs
-   */
-  config: {
-    // 区块链监听任务 - 每20秒执行一次
-    'blockchain-listener': {
-      schedule: '*/20 * * * * *', // 每20秒
-      task: async ({ strapi }) => {
-        try {
-          console.log('Running blockchain listener...');
-          const result = await strapi.service('api::wallet-tx.blockchain-listener').processDeposits();
-          console.log('Blockchain listener result:', result);
-        } catch (error) {
-          console.error('Blockchain listener error:', error);
-        }
+  '0 */1 * * * *': {
+    task: async ({ strapi }) => {
+      // 每小时执行一次补偿扫描
+      console.log('🕐 执行每小时补偿扫描...');
+      try {
+        await strapi.service('api::wallet-tx.blockchain-listener').compensateScan();
+      } catch (error) {
+        console.error('❌ 补偿扫描失败:', error);
       }
     },
+  },
 
-    // 提现处理任务 - 每30秒执行一次
-    'withdraw-processor': {
-      schedule: '*/30 * * * * *', // 每30秒
-      task: async ({ strapi }) => {
-        try {
-          console.log('Running withdraw processor...');
-          const result = await strapi.service('api::wallet.withdraw').processPendingWithdrawals();
-          console.log('Withdraw processor result:', result);
-        } catch (error) {
-          console.error('Withdraw processor error:', error);
-        }
+  '*/15 * * * * *': {
+    task: async ({ strapi }) => {
+      // 每15秒执行一次区块链监听
+      console.log('🔍 执行区块链监听...');
+      try {
+        await strapi.service('api::wallet-tx.blockchain-listener').listenForDeposits();
+      } catch (error) {
+        console.error('❌ 区块链监听失败:', error);
       }
-    }
-  }
+    },
+  },
+
+  '*/30 * * * * *': {
+    task: async ({ strapi }) => {
+      // 每30秒执行一次提现处理
+      console.log('💸 执行提现处理...');
+      try {
+        await strapi.service('api::withdraw-request.withdraw-processor').processPendingWithdrawals();
+      } catch (error) {
+        console.error('❌ 提现处理失败:', error);
+      }
+    },
+  },
+
+  '0 */5 * * * *': {
+    task: async ({ strapi }) => {
+      // 每5分钟执行一次统计报告
+      console.log('📊 生成统计报告...');
+      try {
+        const stats = await strapi.service('api::withdraw-request.withdraw-processor').getWithdrawalStats();
+        if (stats) {
+          console.log('📈 提现统计:', stats);
+        }
+      } catch (error) {
+        console.error('❌ 统计报告失败:', error);
+      }
+    },
+  },
 }; 

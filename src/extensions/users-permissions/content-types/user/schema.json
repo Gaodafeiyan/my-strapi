@@ -1,0 +1,87 @@
+{
+  "kind": "collectionType",
+  "collectionName": "up_users",
+  "info": {
+    "name": "user",
+    "description": "",
+    "singularName": "user",
+    "pluralName": "users",
+    "displayName": "User"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "diamondId": {
+      "type": "uid",
+      "required": true,
+      "unique": true
+    },
+    "referralCode": {
+      "type": "uid",
+      "required": true,
+      "unique": true
+    },
+    "invitedBy": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "invitees"
+    },
+    "invitees": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "invitedBy"
+    },
+    "wallet_balance": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::wallet-balance.wallet-balance",
+      "mappedBy": "user"
+    },
+    "wallet_tx": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::wallet-tx.wallet-tx",
+      "mappedBy": "user"
+    },
+    "subscription_orders": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::subscription-order.subscription-order",
+      "mappedBy": "user"
+    },
+    "inviteRewards": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::referral-reward.referral-reward",
+      "mappedBy": "referrer"
+    },
+    "deposit_address": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::deposit-address.deposit-address",
+      "mappedBy": "user"
+    },
+    "withdraw_requests": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::withdraw-request.withdraw-request",
+      "mappedBy": "user"
+    },
+    "lottery_spins": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::lottery-spin.lottery-spin",
+      "mappedBy": "user"
+    },
+    "shop_orders": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::shop-order.shop-order",
+      "mappedBy": "user"
+    }
+  }
+} 

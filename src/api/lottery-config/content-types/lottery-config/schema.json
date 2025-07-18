@@ -1,0 +1,24 @@
+{
+  "kind": "collectionType",
+  "collectionName": "lottery_configs",
+  "info": {
+    "singularName": "lottery-config",
+    "pluralName": "lottery-configs",
+    "displayName": "LotteryConfig"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "spinCostUSDT": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+} 

@@ -1,0 +1,53 @@
+{
+  "kind": "collectionType",
+  "collectionName": "store_products",
+  "info": {
+    "singularName": "store-product",
+    "pluralName": "store-products",
+    "displayName": "StoreProduct"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "sku": {
+      "type": "uid",
+      "targetField": "title"
+    },
+    "priceUSDT": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8
+    },
+    "stockQty": {
+      "type": "integer",
+      "default": -1
+    },
+    "cover": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "gallery": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "shop_orders": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::shop-order.shop-order",
+      "mappedBy": "product"
+    }
+  }
+} 

@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "token_assets",
+  "info": {
+    "singularName": "token-asset",
+    "pluralName": "token-assets",
+    "displayName": "TokenAsset"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "symbol": {
+      "type": "string",
+      "required": true
+    },
+    "chain": {
+      "type": "enumeration",
+      "enum": ["BSC"],
+      "default": "BSC"
+    },
+    "contract": {
+      "type": "string",
+      "required": true
+    },
+    "decimals": {
+      "type": "integer",
+      "default": 18
+    },
+    "token_prices": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::token-price.token-price",
+      "mappedBy": "asset"
+    },
+    "wallet_txes": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::wallet-tx.wallet-tx",
+      "mappedBy": "asset"
+    }
+  }
+} 

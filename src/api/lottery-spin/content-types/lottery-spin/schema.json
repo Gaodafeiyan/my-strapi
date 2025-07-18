@@ -1,0 +1,32 @@
+{
+  "kind": "collectionType",
+  "collectionName": "lottery_spins",
+  "info": {
+    "singularName": "lottery-spin",
+    "pluralName": "lottery-spins",
+    "displayName": "LotterySpin"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "result": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::lottery-prize.lottery-prize",
+      "inversedBy": "lottery_spins"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "lottery_spins"
+    },
+    "spentUSDT": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8
+    }
+  }
+} 

@@ -1,0 +1,26 @@
+{
+  "kind": "collectionType",
+  "collectionName": "wallet_balances",
+  "info": {
+    "singularName": "wallet-balance",
+    "pluralName": "wallet-balances",
+    "displayName": "WalletBalance"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "amount": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8
+    },
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "wallet_balance"
+    }
+  }
+} 

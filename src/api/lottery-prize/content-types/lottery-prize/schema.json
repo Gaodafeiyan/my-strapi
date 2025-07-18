@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "lottery_prizes",
+  "info": {
+    "singularName": "lottery-prize",
+    "pluralName": "lottery-prizes",
+    "displayName": "LotteryPrize"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "probabilityWeight": {
+      "type": "integer"
+    },
+    "stockQty": {
+      "type": "integer",
+      "default": -1
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "lottery_spins": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::lottery-spin.lottery-spin",
+      "mappedBy": "result"
+    }
+  }
+} 

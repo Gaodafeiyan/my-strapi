@@ -1,0 +1,29 @@
+{
+  "kind": "collectionType",
+  "collectionName": "token_prices",
+  "info": {
+    "singularName": "token-price",
+    "pluralName": "token-prices",
+    "displayName": "TokenPrice"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "priceUSD": {
+      "type": "decimal",
+      "precision": 20,
+      "scale": 8
+    },
+    "fetchedAt": {
+      "type": "datetime"
+    },
+    "asset": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::token-asset.token-asset",
+      "inversedBy": "token_prices"
+    }
+  }
+} 

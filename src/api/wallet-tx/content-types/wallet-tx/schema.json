@@ -1,0 +1,54 @@
+{
+  "kind": "collectionType",
+  "collectionName": "wallet_txes",
+  "info": {
+    "singularName": "wallet-tx",
+    "pluralName": "wallet-txes",
+    "displayName": "WalletTx"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "txType": {
+      "type": "enumeration",
+      "enum": ["static", "referral", "aiToken", "lottery", "deposit", "withdraw", "shop"]
+    },
+    "direction": {
+      "type": "enumeration",
+      "enum": ["in", "out"]
+    },
+    "amount": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8
+    },
+    "walletStatus": {
+      "type": "enumeration",
+      "enum": ["pending", "success", "fail"]
+    },
+    "txHash": {
+      "type": "string",
+      "unique": true
+    },
+    "asset": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::token-asset.token-asset",
+      "inversedBy": "wallet_txes"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "wallet_tx"
+    },
+    "shop_orders": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::shop-order.shop-order",
+      "mappedBy": "walletTx"
+    }
+  }
+} 

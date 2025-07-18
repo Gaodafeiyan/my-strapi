@@ -1,0 +1,32 @@
+{
+  "kind": "collectionType",
+  "collectionName": "referral_rewards",
+  "info": {
+    "singularName": "referral-reward",
+    "pluralName": "referral-rewards",
+    "displayName": "ReferralReward"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "amountUSDT": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8
+    },
+    "fromOrder": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::subscription-order.subscription-order",
+      "inversedBy": "referral_rewards"
+    },
+    "referrer": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "inviteRewards"
+    }
+  }
+} 

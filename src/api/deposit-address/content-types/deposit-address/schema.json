@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "deposit_addresses",
+  "info": {
+    "singularName": "deposit-address",
+    "pluralName": "deposit-addresses",
+    "displayName": "DepositAddress"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "address": {
+      "type": "string",
+      "required": true
+    },
+    "chain": {
+      "type": "enumeration",
+      "enum": ["BSC"],
+      "default": "BSC"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "deposit_address"
+    }
+  }
+} 

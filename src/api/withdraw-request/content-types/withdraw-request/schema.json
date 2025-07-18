@@ -1,0 +1,43 @@
+{
+  "kind": "collectionType",
+  "collectionName": "withdraw_requests",
+  "info": {
+    "singularName": "withdraw-request",
+    "pluralName": "withdraw-requests",
+    "displayName": "WithdrawRequest"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "toAddress": {
+      "type": "string",
+      "required": true
+    },
+    "amountUSDT": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8
+    },
+    "txHash": {
+      "type": "string",
+      "unique": true
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["pending", "processing", "success", "fail"]
+    },
+    "feeGas": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "withdraw_requests"
+    }
+  }
+} 

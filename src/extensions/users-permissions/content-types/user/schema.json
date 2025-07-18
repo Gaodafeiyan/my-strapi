@@ -17,6 +17,47 @@
     }
   },
   "attributes": {
+    "username": {
+      "type": "string",
+      "unique": true,
+      "minLength": 3
+    },
+    "email": {
+      "type": "email",
+      "unique": true,
+      "required": true
+    },
+    "provider": {
+      "type": "string"
+    },
+    "password": {
+      "type": "password",
+      "minLength": 6,
+      "private": true
+    },
+    "resetPasswordToken": {
+      "type": "string",
+      "private": true
+    },
+    "confirmationToken": {
+      "type": "string",
+      "private": true
+    },
+    "confirmed": {
+      "type": "boolean",
+      "default": false
+    },
+    "blocked": {
+      "type": "boolean",
+      "default": false
+    },
+    "role": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.role",
+      "inversedBy": "users",
+      "configurable": false
+    },
     "diamondId": {
       "type": "uid",
       "required": true,

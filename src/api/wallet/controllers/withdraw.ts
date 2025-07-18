@@ -11,7 +11,7 @@ export default factories.createCoreController('api::wallet-balance.wallet-balanc
       const userId = ctx.state.user.id;
 
       // 调用服务处理提现逻辑
-      const result = await strapi.service('api::wallet.withdraw').withdraw({
+      const result = await strapi.service('api::wallet-balance.withdraw').withdraw({
         userId,
         toAddress,
         amountUSDT

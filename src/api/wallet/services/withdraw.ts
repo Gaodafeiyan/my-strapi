@@ -4,7 +4,7 @@
 
 import { factories } from '@strapi/strapi';
 
-export default factories.createCoreService('api::wallet.wallet' as any, ({ strapi }) => ({
+export default factories.createCoreService('api::wallet-balance.wallet-balance' as any, ({ strapi }) => ({
   async withdraw(payload: {
     userId: number;
     toAddress: string;

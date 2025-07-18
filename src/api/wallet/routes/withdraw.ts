@@ -1,18 +1,16 @@
 /**
- * custom-withdraw router
+ * withdraw router
  */
-
-import { factories } from '@strapi/strapi';
 
 export default {
   routes: [
     {
       method: 'POST',
       path: '/wallet/withdraw',
-      handler: 'withdraw.withdraw',
+      handler: 'wallet.withdraw',
       config: {
         auth: false,
-        policies: ['auth-policy'],
+        policies: [],
         middlewares: []
       }
     }

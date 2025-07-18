@@ -1,12 +1,15 @@
 /**
- * withdraw controller
+ * wallet controller
  */
 
-import { factories } from '@strapi/strapi'
-
-export default factories.createCoreController('api::wallet-balance.wallet-balance' as any, ({ strapi }) => ({
+export default ({ strapi }) => ({
   async withdraw(ctx) {
     try {
+      // 检查认证
+      if (!ctx.state.user) {
+        return ctx.unauthorized('Authentication required');
+      }
+      
       const { toAddress, amountUSDT } = ctx.request.body;
       const userId = ctx.state.user.id;
 
@@ -22,4 +25,4 @@ export default factories.createCoreController('api::wallet-balance.wallet-balanc
       ctx.throw(400, error.message);
     }
   }
-})); 
+}); 

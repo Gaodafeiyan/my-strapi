@@ -11,7 +11,11 @@
   "options": {
     "draftAndPublish": false
   },
-  "pluginOptions": {},
+  "pluginOptions": {
+    "users-permissions": {
+      "collectionName": "up_users"
+    }
+  },
   "attributes": {
     "diamondId": {
       "type": "uid",

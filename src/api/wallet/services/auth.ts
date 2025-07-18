@@ -82,15 +82,11 @@ export default factories.createCoreService('api::wallet-balance.wallet-balance' 
   },
 
   async generateDepositAddress(userId: number): Promise<string> {
-    // 从环境变量获取助记词并派生新地址
-    const mnemonic = process.env.DEPOSIT_ADDR_MNEMONIC;
-    if (!mnemonic) {
-      throw new Error('DEPOSIT_ADDR_MNEMONIC not configured');
-    }
-
-    // 这里应该使用 HDWallet 派生地址
-    // 简化实现，实际应该使用 ethers.js 或 web3.js
-    const address = `0x${userId.toString().padStart(40, '0')}`;
+    // 简化实现：生成一个模拟的 BSC 地址
+    // 实际项目中应该使用 HDWallet 派生真实地址
+    const timestamp = Date.now();
+    const randomHex = Math.random().toString(16).substring(2, 10);
+    const address = `0x${timestamp.toString(16)}${randomHex}${userId.toString().padStart(8, '0')}`;
     return address;
   }
 })); 

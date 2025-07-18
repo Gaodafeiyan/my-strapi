@@ -56,4 +56,16 @@ export default {
       }
     },
   },
+
+  '5 0 * * *': {
+    task: async ({ strapi }) => {
+      // 每天 00:05 UTC 执行静态收益处理
+      console.log('💰 执行每日静态收益处理...');
+      try {
+        await strapi.service('api::subscription-order.static-yield').processStaticYield();
+      } catch (error) {
+        console.error('❌ 静态收益处理失败:', error);
+      }
+    },
+  },
 }; 

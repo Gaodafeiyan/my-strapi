@@ -4,7 +4,7 @@
 
 import { factories } from '@strapi/strapi'
 
-export default factories.createCoreController('api::wallet.wallet' as any, ({ strapi }) => ({
+export default factories.createCoreController('api::wallet-balance.wallet-balance' as any, ({ strapi }) => ({
   async withdraw(ctx) {
     try {
       const { toAddress, amountUSDT } = ctx.request.body;

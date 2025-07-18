@@ -1,5 +1,5 @@
 /**
- * custom-register router
+ * auth router
  */
 
 import { factories } from '@strapi/strapi';
@@ -9,7 +9,7 @@ export default {
     {
       method: 'POST',
       path: '/auth/invite-register',
-      handler: 'invite-register.inviteRegister',
+      handler: 'auth.inviteRegister',
       config: {
         auth: false,
         policies: [],

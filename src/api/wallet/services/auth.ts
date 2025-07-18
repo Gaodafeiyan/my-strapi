@@ -1,11 +1,11 @@
 /**
- * invite-register service
+ * auth service
  */
 
 import { factories } from '@strapi/strapi';
 import { nanoid } from 'nanoid';
 
-export default factories.createCoreService('api::user.user' as any, ({ strapi }) => ({
+export default factories.createCoreService('api::wallet-balance.wallet-balance' as any, ({ strapi }) => ({
   async inviteRegister(payload: {
     username: string;
     email: string;
@@ -14,18 +14,18 @@ export default factories.createCoreService('api::user.user' as any, ({ strapi })
   }) {
     const { username, email, password, inviteCode } = payload;
 
-          // 验证邀请码
-      let invitedBy = null;
-      if (inviteCode) {
-        const inviter = await strapi.entityService.findMany('plugin::users-permissions.user', {
-          filters: { referralCode: inviteCode } as any
-        });
-        
-        if (!inviter || inviter.length === 0) {
-          throw new Error('INVALID_INVITE_CODE');
-        }
-        invitedBy = inviter[0].id;
+    // 验证邀请码
+    let invitedBy = null;
+    if (inviteCode) {
+      const inviter = await strapi.entityService.findMany('plugin::users-permissions.user', {
+        filters: { referralCode: inviteCode } as any
+      });
+      
+      if (!inviter || inviter.length === 0) {
+        throw new Error('INVALID_INVITE_CODE');
       }
+      invitedBy = inviter[0].id;
+    }
 
     // 生成唯一标识
     const diamondId = nanoid(9);

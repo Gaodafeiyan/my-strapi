@@ -1,5 +1,5 @@
 /**
- * invite-register validator
+ * auth validator
  */
 
 import * as yup from 'yup';

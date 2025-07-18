@@ -11,10 +11,8 @@ export default {
       path: '/wallet/withdraw',
       handler: 'withdraw.withdraw',
       config: {
-        auth: {
-          scope: ['authenticated']
-        },
-        policies: [],
+        auth: false,
+        policies: ['auth-policy'],
         middlewares: []
       }
     }

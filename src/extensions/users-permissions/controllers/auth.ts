@@ -1,11 +1,11 @@
 /**
- * auth controller
+ * auth controller for users-permissions
  */
 
-import { factories } from '@strapi/strapi'
-import validator from '../validators/auth';
+import { factories } from '@strapi/strapi';
+import validator from '../../../api/wallet/validators/auth';
 
-export default factories.createCoreController('api::wallet-balance.wallet-balance' as any, ({ strapi }) => ({
+export default factories.createCoreController('plugin::users-permissions.user', ({ strapi }) => ({
   async inviteRegister(ctx) {
     try {
       const { username, email, password, inviteCode } = ctx.request.body;

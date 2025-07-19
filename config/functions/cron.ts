@@ -32,12 +32,24 @@ export default {
 
   '*/30 * * * * *': {
     task: async ({ strapi }) => {
-      // 每30秒执行一次提现处理
-      console.log('💸 执行提现处理...');
+      // 每30秒执行一次USDT提现处理
+      console.log('💸 执行USDT提现处理...');
       try {
-        await strapi.service('api::withdraw-request.withdraw-processor').processPendingWithdrawals();
+        await strapi.service('api::usdt-withdraw.usdt-withdraw-listener').processPendingWithdrawals();
       } catch (error) {
-        console.error('❌ 提现处理失败:', error);
+        console.error('❌ USDT提现处理失败:', error);
+      }
+    },
+  },
+
+  '*/45 * * * * *': {
+    task: async ({ strapi }) => {
+      // 每45秒执行一次AI代币提现处理
+      console.log('🤖 执行AI代币提现处理...');
+      try {
+        await strapi.service('api::ai-token-withdraw.ai-token-withdraw-listener').processPendingWithdrawals();
+      } catch (error) {
+        console.error('❌ AI代币提现处理失败:', error);
       }
     },
   },
@@ -45,11 +57,13 @@ export default {
   '0 */5 * * * *': {
     task: async ({ strapi }) => {
       // 每5分钟执行一次统计报告
-      console.log('📊 生成统计报告...');
+      console.log('📊 生成提现统计报告...');
       try {
-        const stats = await strapi.service('api::withdraw-request.withdraw-processor').getWithdrawalStats();
-        if (stats) {
-          console.log('📈 提现统计:', stats);
+        const usdtStats = await strapi.service('api::usdt-withdraw.usdt-withdraw-listener').getWithdrawalStats();
+        const aiTokenStats = await strapi.service('api::ai-token-withdraw.ai-token-withdraw-listener').getWithdrawalStats();
+        if (usdtStats || aiTokenStats) {
+          console.log('📈 USDT提现统计:', usdtStats);
+          console.log('📈 AI代币提现统计:', aiTokenStats);
         }
       } catch (error) {
         console.error('❌ 统计报告失败:', error);

@@ -147,26 +147,26 @@ export default factories.createCoreService('api::subscription-order.subscription
         }
       });
 
-      // 更新用户钱包余额
-      const walletBalance = await strapi.entityService.findMany('api::wallet-balance.wallet-balance' as any, {
-        filters: { user: user.id }
-      });
+              // 更新用户钱包余额
+        const walletBalance = await strapi.entityService.findMany('api::wallet-balance.wallet-balance' as any, {
+          filters: { user: user.id }
+        });
 
-      if (walletBalance && walletBalance.length > 0) {
-        await strapi.entityService.update('api::wallet-balance.wallet-balance' as any, walletBalance[0].id, {
-          data: {
-            amount: walletBalance[0].amount + principal
-          }
-        });
-      } else {
-        // 创建用户钱包余额
-        await strapi.entityService.create('api::wallet-balance.wallet-balance' as any, {
-          data: {
-            amount: principal,
-            user: user.id
-          }
-        });
-      }
+        if (walletBalance && walletBalance.length > 0) {
+          await strapi.entityService.update('api::wallet-balance.wallet-balance' as any, walletBalance[0].id, {
+            data: {
+              usdtBalance: walletBalance[0].usdtBalance + principal
+            }
+          });
+        } else {
+          // 创建用户钱包余额
+          await strapi.entityService.create('api::wallet-balance.wallet-balance' as any, {
+            data: {
+              usdtBalance: principal,
+              user: user.id
+            }
+          });
+        }
 
       console.log(`💰 返还本金: 用户 ${user.username}, 金额 ${principal} USDT`);
 
@@ -203,7 +203,7 @@ export default factories.createCoreService('api::subscription-order.subscription
             referrer: referrer.id,
             fromUser: user.id,
             fromOrder: order.id,
-            amountUSDT: referralAmount
+            amount: referralAmount
           }
         });
 
@@ -227,14 +227,14 @@ export default factories.createCoreService('api::subscription-order.subscription
         if (referrerBalance && referrerBalance.length > 0) {
           await strapi.entityService.update('api::wallet-balance.wallet-balance' as any, referrerBalance[0].id, {
             data: {
-              amount: referrerBalance[0].amount + referralAmount
+              usdtBalance: referrerBalance[0].usdtBalance + referralAmount
             }
           });
         } else {
           // 创建推荐人钱包余额
           await strapi.entityService.create('api::wallet-balance.wallet-balance' as any, {
             data: {
-              amount: referralAmount,
+              usdtBalance: referralAmount,
               user: referrer.id
             }
           });

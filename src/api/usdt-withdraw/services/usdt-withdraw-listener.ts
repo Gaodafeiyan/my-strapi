@@ -45,7 +45,7 @@ export default {
   // 处理单个USDT提现
   async processUSDTWithdrawal(withdrawal) {
     try {
-      console.log(`🔄 处理USDT提现: ${withdrawal.amountUSDT} USDT -> ${withdrawal.toAddress}`);
+      console.log(`🔄 处理USDT提现: ${withdrawal.amount} USDT -> ${withdrawal.toAddress}`);
       
       // 更新状态为处理中
       await strapi.entityService.update('api::usdt-withdraw.usdt-withdraw' as any, withdrawal.id, {
@@ -75,8 +75,8 @@ export default {
       console.log(`🏦 使用平台USDT钱包: ${wallet.address}`);
 
       // 检查平台钱包余额
-      if (wallet.balance < parseFloat(withdrawal.amountUSDT)) {
-        console.error(`❌ 平台钱包余额不足: ${wallet.balance} USDT < ${withdrawal.amountUSDT} USDT`);
+      if (wallet.balance < parseFloat(withdrawal.amount)) {
+        console.error(`❌ 平台钱包余额不足: ${wallet.balance} USDT < ${withdrawal.amount} USDT`);
         await this.updateWithdrawalStatus(withdrawal.id, 'failed', null, '平台钱包余额不足');
         return false;
       }
@@ -89,7 +89,7 @@ export default {
         // 更新平台钱包余额
         await strapi.entityService.update('api::platform-wallet.platform-wallet' as any, wallet.id, {
           data: {
-            balance: wallet.balance - parseFloat(withdrawal.amountUSDT),
+            balance: wallet.balance - parseFloat(withdrawal.amount),
             lastUpdated: new Date()
           }
         });
@@ -97,7 +97,7 @@ export default {
         // 生成模拟交易哈希
         const txHash = '0x' + Math.random().toString(16).substr(2, 64);
 
-        console.log(`✅ USDT提现成功: ${withdrawal.amountUSDT} USDT`);
+        console.log(`✅ USDT提现成功: ${withdrawal.amount} USDT`);
         console.log(`📤 从平台钱包: ${wallet.address}`);
         console.log(`📥 到用户地址: ${withdrawal.toAddress}`);
         console.log(`🔗 交易哈希: ${txHash}`);
@@ -105,7 +105,7 @@ export default {
         await this.updateWithdrawalStatus(withdrawal.id, 'success', txHash);
         return true;
       } else {
-        console.log(`❌ USDT提现失败: ${withdrawal.amountUSDT} USDT`);
+        console.log(`❌ USDT提现失败: ${withdrawal.amount} USDT`);
         await this.updateWithdrawalStatus(withdrawal.id, 'failed', null, '区块链交易失败');
         return false;
       }
@@ -142,7 +142,7 @@ export default {
     try {
       const stats = await strapi.entityService.findMany('api::usdt-withdraw.usdt-withdraw' as any, {
         filters: {},
-        fields: ['status', 'amountUSDT']
+        fields: ['status', 'amount']
       });
 
       const total = stats.length;
@@ -150,7 +150,7 @@ export default {
       const processing = stats.filter(w => w.status === 'processing').length;
       const success = stats.filter(w => w.status === 'success').length;
       const failed = stats.filter(w => w.status === 'failed').length;
-      const totalAmount = stats.reduce((sum, w) => sum + parseFloat(w.amountUSDT), 0);
+      const totalAmount = stats.reduce((sum, w) => sum + parseFloat(w.amount), 0);
 
       return {
         total,

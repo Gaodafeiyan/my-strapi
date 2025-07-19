@@ -16,9 +16,9 @@ export default factories.createCoreController('api::ai-token-withdraw.ai-token-w
       const { toAddress, amountAI } = ctx.request.body.data;
       const userId = ctx.state.user.id;
 
-      // 验证Solana地址格式
-      if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(toAddress)) {
-        return ctx.badRequest('INVALID_SOLANA_ADDRESS');
+      // 验证BSC地址格式
+      if (!/^0x[a-fA-F0-9]{40}$/.test(toAddress)) {
+        return ctx.badRequest('INVALID_BSC_ADDRESS');
       }
 
       // 验证金额
@@ -67,7 +67,7 @@ export default factories.createCoreController('api::ai-token-withdraw.ai-token-w
         data: {
           toAddress,
           amountAI: amount,
-          chain: 'SOLANA',
+          chain: 'BSC',
           status: 'pending',
           user: userId
         }
@@ -114,9 +114,9 @@ export default factories.createCoreController('api::ai-token-withdraw.ai-token-w
       const { toAddress, amountAI } = ctx.request.body;
       const userId = ctx.state.user.id;
 
-      // 验证Solana地址格式
-      if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(toAddress)) {
-        return ctx.badRequest('INVALID_SOLANA_ADDRESS');
+      // 验证BSC地址格式
+      if (!/^0x[a-fA-F0-9]{40}$/.test(toAddress)) {
+        return ctx.badRequest('INVALID_BSC_ADDRESS');
       }
 
       // 验证金额
@@ -165,7 +165,7 @@ export default factories.createCoreController('api::ai-token-withdraw.ai-token-w
         data: {
           toAddress,
           amountAI: amount,
-          chain: 'SOLANA',
+          chain: 'BSC',
           status: 'pending',
           user: userId
         }

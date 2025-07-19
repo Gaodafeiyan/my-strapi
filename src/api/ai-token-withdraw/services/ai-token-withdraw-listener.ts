@@ -142,7 +142,7 @@ export default factories.createCoreService('api::ai-token-withdraw.ai-token-with
         filters: {
           isActive: true,
           tokenType: 'AI_TOKEN',
-          chain: 'SOLANA'
+          chain: 'BSC'
         },
         sort: { balance: 'desc' },
         limit: 1
@@ -162,9 +162,9 @@ export default factories.createCoreService('api::ai-token-withdraw.ai-token-with
         return false;
       }
 
-      // 调用Solana转账服务
-      const solanaTransferService = require('./solana-transfer-service');
-      const transferResult = await solanaTransferService.transferAIToken(
+      // 调用BSC转账服务
+      const bscTransferService = require('./bsc-transfer-service');
+      const transferResult = await bscTransferService.transferAiTokens(
         withdrawal.toAddress, 
         parseFloat(withdrawal.amountAI)
       );
@@ -178,13 +178,13 @@ export default factories.createCoreService('api::ai-token-withdraw.ai-token-with
           }
         });
 
-        console.log(`✅ Solana AI代币提现成功: ${withdrawal.amountAI} AI`);
+        console.log(`✅ BSC AI代币提现成功: ${withdrawal.amountAI} AI`);
         console.log(`📤 从平台钱包: ${wallet.address}`);
         console.log(`📥 到用户地址: ${withdrawal.toAddress}`);
-        console.log(`🔗 交易签名: ${transferResult.signature}`);
+        console.log(`🔗 交易哈希: ${transferResult.txHash}`);
         return true;
       } else {
-        console.log(`❌ Solana AI代币提现失败: ${withdrawal.amountAI} AI`);
+        console.log(`❌ BSC AI代币提现失败: ${withdrawal.amountAI} AI`);
         console.log(`❌ 错误信息: ${transferResult.error}`);
         return false;
       }

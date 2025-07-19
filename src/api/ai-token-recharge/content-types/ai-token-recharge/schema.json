@@ -45,7 +45,7 @@
     },
     "chain": {
       "type": "enumeration",
-      "enum": ["BSC", "ETH", "POLYGON"],
+      "enum": ["BSC"],
       "default": "BSC"
     },
     "blockNumber": {

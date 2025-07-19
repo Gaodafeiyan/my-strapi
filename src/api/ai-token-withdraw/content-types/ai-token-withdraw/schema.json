@@ -30,8 +30,8 @@
     },
     "chain": {
       "type": "enumeration",
-      "enum": ["SOLANA", "BSC", "ETH"],
-      "default": "SOLANA"
+      "enum": ["BSC"],
+      "default": "BSC"
     },
     "feeGas": {
       "type": "decimal",

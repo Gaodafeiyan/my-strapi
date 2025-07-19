@@ -6,13 +6,8 @@ export default {
   routes: [
     {
       method: 'POST',
-      path: '/api/wallet-balances/recharge-usdt',
-      handler: 'wallet-balance.rechargeUSDT',
-      config: {
-        auth: { scope: ['api::wallet-balance.wallet-balance'] },
-        policies: [],
-        middlewares: [],
-      },
+      path: '/wallet-balances/recharge-usdt',   // 仅保留业务路径
+      handler: 'wallet-balance.rechargeUSDT',  // 其余 config 整块删除
     },
   ],
 }; 

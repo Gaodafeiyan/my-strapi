@@ -2,68 +2,194 @@ const axios = require('axios');
 
 const BASE_URL = 'http://118.107.4.158:1337';
 
-async function testApiEndpoints() {
-  console.log('🔍 测试API端点...');
-  
+// 创建测试用户
+async function createTestUser() {
   try {
-    // 1. 用户注册
-    console.log('\n1️⃣ 测试用户注册...');
-    const registerResponse = await axios.post(`${BASE_URL}/api/auth/invite-register`, {
+    console.log('👤 创建测试用户...');
+    
+    const response = await axios.post(`${BASE_URL}/api/auth/local/register`, {
       username: 'testuser' + Date.now(),
       email: `testuser${Date.now()}@example.com`,
-      password: '123456',
-      inviteCode: 'user'
+      password: 'password123'
     });
-
-    console.log('✅ 注册成功');
-    const token = registerResponse.data.jwt;
     
-    // 2. 测试各种API端点
-    const endpoints = [
-      { name: '钱包余额', url: '/api/wallet-balances', method: 'GET' },
-      { name: '充值地址', url: '/api/deposit-addresses', method: 'GET' },
-      { name: '提现请求', url: '/api/withdraw-requests', method: 'GET' },
-      { name: '钱包交易', url: '/api/wallet-txes', method: 'GET' },
-      { name: '自定义提现', url: '/api/wallet/withdraw', method: 'POST' },
-      { name: '标准提现', url: '/api/withdraw-requests', method: 'POST' }
-    ];
-
-    for (const endpoint of endpoints) {
-      console.log(`\n测试 ${endpoint.name}...`);
-      try {
-        const config = {
-          headers: { 'Authorization': `Bearer ${token}` }
-        };
-        
-        if (endpoint.method === 'POST') {
-          config.headers['Content-Type'] = 'application/json';
-        }
-
-        let response;
-        if (endpoint.method === 'GET') {
-          response = await axios.get(`${BASE_URL}${endpoint.url}`, config);
-        } else if (endpoint.method === 'POST') {
-          const data = endpoint.name === '自定义提现' ? {
-            toAddress: '0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6',
-            amountUSDT: 5.5
-          } : {
-            data: {
-              toAddress: '0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6',
-              amountUSDT: 5.5
-            }
-          };
-          response = await axios.post(`${BASE_URL}${endpoint.url}`, data, config);
-        }
-
-        console.log(`✅ ${endpoint.name} 正常 (${response.status})`);
-      } catch (error) {
-        console.log(`❌ ${endpoint.name} 失败: ${error.response?.status} - ${error.response?.data}`);
-      }
+    if (response.data.jwt) {
+      console.log('✅ 测试用户创建成功');
+      return response.data.jwt;
     }
-    
   } catch (error) {
-    console.log('❌ 测试失败:', error.message);
+    console.log('❌ 创建测试用户失败:', error.response?.data || error.message);
+    return null;
   }
 }
 
-testApiEndpoints(); 
+// 测试用户认证
+async function testAuth() {
+  try {
+    console.log('🔐 测试用户认证...');
+    
+    // 尝试使用已存在的用户登录
+    const loginResponse = await axios.post(`${BASE_URL}/api/auth/local`, {
+      identifier: 'testuser877',
+      password: '123456'
+    });
+    
+    if (loginResponse.data.jwt) {
+      console.log('✅ 认证成功，获取到JWT token');
+      return loginResponse.data.jwt;
+    }
+  } catch (error) {
+    console.log('❌ 认证失败:', error.response?.data || error.message);
+    return null;
+  }
+}
+
+// 测试钱包余额API
+async function testWalletBalance(token) {
+  try {
+    console.log('\n💰 测试钱包余额API...');
+    
+    const response = await axios.get(`${BASE_URL}/api/wallet-balances`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    console.log('✅ 钱包余额API正常:', response.data);
+    return response.data;
+  } catch (error) {
+    console.log('❌ 钱包余额API失败:', error.response?.status, error.response?.data || error.message);
+    return null;
+  }
+}
+
+// 测试USDT充值API
+async function testRechargeUSDT(token) {
+  try {
+    console.log('\n💸 测试USDT充值API...');
+    
+    const response = await axios.post(`${BASE_URL}/api/wallet-balances/recharge-usdt`, {
+      amount: 100
+    }, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    console.log('✅ USDT充值API正常:', response.data);
+    return response.data;
+  } catch (error) {
+    console.log('❌ USDT充值API失败:', error.response?.status, error.response?.data || error.message);
+    return null;
+  }
+}
+
+// 测试USDT提现API
+async function testUSDTWithdraw(token) {
+  try {
+    console.log('\n💸 测试USDT提现API...');
+    
+    const response = await axios.post(`${BASE_URL}/api/usdt-withdraws`, {
+      amount: 50,
+      address: '0x1234567890123456789012345678901234567890'
+    }, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    console.log('✅ USDT提现API正常:', response.data);
+    return response.data;
+  } catch (error) {
+    console.log('❌ USDT提现API失败:', error.response?.status, error.response?.data || error.message);
+    return null;
+  }
+}
+
+// 测试AI代币提现API
+async function testAITokenWithdraw(token) {
+  try {
+    console.log('\n🤖 测试AI代币提现API...');
+    
+    const response = await axios.post(`${BASE_URL}/api/ai-token-withdraws`, {
+      amount: 10,
+      address: '0x1234567890123456789012345678901234567890'
+    }, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    console.log('✅ AI代币提现API正常:', response.data);
+    return response.data;
+  } catch (error) {
+    console.log('❌ AI代币提现API失败:', error.response?.status, error.response?.data || error.message);
+    return null;
+  }
+}
+
+// 测试充值记录API
+async function testRechargeRecords(token) {
+  try {
+    console.log('\n📊 测试充值记录API...');
+    
+    const response = await axios.get(`${BASE_URL}/api/recharge-records`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    console.log('✅ 充值记录API正常:', response.data);
+    return response.data;
+  } catch (error) {
+    console.log('❌ 充值记录API失败:', error.response?.status, error.response?.data || error.message);
+    return null;
+  }
+}
+
+// 测试充值地址API
+async function testDepositAddresses(token) {
+  try {
+    console.log('\n🏦 测试充值地址API...');
+    
+    const response = await axios.get(`${BASE_URL}/api/deposit-addresses`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    console.log('✅ 充值地址API正常:', response.data);
+    return response.data;
+  } catch (error) {
+    console.log('❌ 充值地址API失败:', error.response?.status, error.response?.data || error.message);
+    return null;
+  }
+}
+
+// 主测试函数
+async function runTests() {
+  console.log('🚀 开始测试API接口...\n');
+  
+  // 测试认证
+  const token = await testAuth();
+  if (!token) {
+    console.log('❌ 无法获取认证token，停止测试');
+    return;
+  }
+  
+  // 测试各个API
+  await testWalletBalance(token);
+  await testRechargeUSDT(token);
+  await testUSDTWithdraw(token);
+  await testAITokenWithdraw(token);
+  await testRechargeRecords(token);
+  await testDepositAddresses(token);
+  
+  console.log('\n🎉 API测试完成！');
+}
+
+// 运行测试
+runTests().catch(console.error); 

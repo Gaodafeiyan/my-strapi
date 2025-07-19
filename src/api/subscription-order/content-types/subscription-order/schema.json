@@ -60,6 +60,12 @@
       "type": "integer",
       "default": 0,
       "description": "抽奖次数配额"
+    },
+    "referral_rewards": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::referral-reward.referral-reward",
+      "mappedBy": "fromOrder"
     }
   }
 } 

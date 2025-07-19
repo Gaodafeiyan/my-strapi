@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API接口测试</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .test-button:hover {
+            background-color: #45a049;
+        }
+        .test-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .output {
+            background-color: #2d2d2d;
+            border: 1px solid #555;
+            border-radius: 5px;
+            padding: 20px;
+            margin-top: 20px;
+            min-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .success { color: #4CAF50; }
+        .error { color: #f44336; }
+        .warning { color: #ff9800; }
+        .info { color: #2196F3; }
+        .summary {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 API接口自动测试</h1>
+            <p>测试目标: http://118.107.4.158:1337</p>
+        </div>
+        
+        <div style="text-align: center;">
+            <button class="test-button" onclick="runTests()" id="testBtn">开始测试</button>
+            <button class="test-button" onclick="clearOutput()">清空输出</button>
+        </div>
+        
+        <div class="output" id="output"></div>
+        <div class="summary" id="summary" style="display: none;"></div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://118.107.4.158:1337';
+        
+        // 测试接口列表
+        const apiTests = [
+            { name: '认购计划', url: '/api/subscription-plans' },
+            { name: '抽奖配置', url: '/api/lottery-configs' },
+            { name: '抽奖奖品', url: '/api/lottery-prizes' },
+            { name: '商城商品', url: '/api/store-products' },
+            { name: '用户列表', url: '/api/users' },
+            { name: '钱包余额', url: '/api/wallet-balances' },
+            { name: '钱包交易', url: '/api/wallet-txes' },
+            { name: '认购订单', url: '/api/subscription-orders' },
+            { name: '推荐奖励', url: '/api/referral-rewards' },
+            { name: '充值地址', url: '/api/deposit-addresses' },
+            { name: '提现申请', url: '/api/withdraw-requests' },
+            { name: '抽奖记录', url: '/api/lottery-spins' },
+            { name: '商城订单', url: '/api/shop-orders' }
+        ];
+        
+        // 测试结果
+        let passed = 0;
+        let failed = 0;
+        let errors = [];
+        
+        function log(message, type = 'info') {
+            const output = document.getElementById('output');
+            const timestamp = new Date().toLocaleTimeString();
+            const colorClass = type === 'success' ? 'success' : 
+                             type === 'error' ? 'error' : 
+                             type === 'warning' ? 'warning' : 'info';
+            output.innerHTML += `<span class="${colorClass}">[${timestamp}] ${message}</span>\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        async function testAPI(api) {
+            try {
+                log(`🧪 测试: ${api.name}`, 'info');
+                const response = await fetch(`${BASE_URL}${api.url}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log(`✅ ${api.name} - 通过 (${response.status})`, 'success');
+                    if (data.data) {
+                        log(`   数据量: ${data.data.length}`, 'info');
+                    }
+                    passed++;
+                } else {
+                    log(`❌ ${api.name} - 失败 (${response.status})`, 'error');
+                    failed++;
+                    errors.push({ name: api.name, status: response.status });
+                }
+            } catch (error) {
+                log(`❌ ${api.name} - 网络错误`, 'error');
+                failed++;
+                errors.push({ name: api.name, error: '网络错误' });
+            }
+        }
+        
+        async function testRegisterAPI() {
+            try {
+                log('🧪 测试: 注册接口', 'info');
+                const response = await fetch(`${BASE_URL}/api/wallet/auth/invite-register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: 'testuser',
+                        email: 'test@example.com',
+                        password: 'testpass123',
+                        inviteCode: 'user'
+                    })
+                });
+                
+                if (response.ok) {
+                    log(`✅ 注册接口 - 通过 (${response.status})`, 'success');
+                    passed++;
+                } else if (response.status === 400) {
+                    log('✅ 注册接口 - 路由存在 (400 - 参数验证)', 'success');
+                    passed++;
+                } else {
+                    log(`❌ 注册接口 - 失败 (${response.status})`, 'error');
+                    failed++;
+                    errors.push({ name: '注册接口', status: response.status });
+                }
+            } catch (error) {
+                log('❌ 注册接口 - 网络错误', 'error');
+                failed++;
+                errors.push({ name: '注册接口', error: '网络错误' });
+            }
+        }
+        
+        async function runTests() {
+            // 重置结果
+            passed = 0;
+            failed = 0;
+            errors = [];
+            
+            // 禁用按钮
+            document.getElementById('testBtn').disabled = true;
+            document.getElementById('testBtn').textContent = '测试中...';
+            
+            // 清空输出
+            clearOutput();
+            
+            log('🚀 开始API接口测试...', 'info');
+            log(`📍 测试目标: ${BASE_URL}`, 'info');
+            log('', 'info');
+            
+            // 测试GET接口
+            for (const api of apiTests) {
+                await testAPI(api);
+                await new Promise(resolve => setTimeout(resolve, 100)); // 延迟100ms
+            }
+            
+            // 测试注册接口
+            await testRegisterAPI();
+            
+            // 结果汇总
+            log('', 'info');
+            log('📊 测试结果汇总:', 'info');
+            log(`✅ 通过: ${passed}`, 'success');
+            log(`❌ 失败: ${failed}`, 'error');
+            log(`📈 成功率: ${((passed / (passed + failed)) * 100).toFixed(1)}%`, 'info');
+            
+            if (errors.length > 0) {
+                log('', 'info');
+                log('❌ 失败详情:', 'error');
+                errors.forEach(({ name, status, error }) => {
+                    log(`   ${name}: ${status || error}`, 'error');
+                });
+            }
+            
+            log('', 'info');
+            if (failed === 0) {
+                log('🎉 所有API接口测试通过！', 'success');
+            } else {
+                log('⚠️  部分API接口存在问题，请检查修复', 'warning');
+            }
+            
+            // 显示汇总
+            showSummary();
+            
+            // 恢复按钮
+            document.getElementById('testBtn').disabled = false;
+            document.getElementById('testBtn').textContent = '重新测试';
+        }
+        
+        function showSummary() {
+            const summary = document.getElementById('summary');
+            const successRate = ((passed / (passed + failed)) * 100).toFixed(1);
+            
+            summary.innerHTML = `
+                <h3>📋 测试汇总</h3>
+                <p><strong>总计:</strong> ${passed + failed} 个接口</p>
+                <p><strong>通过:</strong> <span class="success">${passed}</span> 个</p>
+                <p><strong>失败:</strong> <span class="error">${failed}</span> 个</p>
+                <p><strong>成功率:</strong> <span class="${failed === 0 ? 'success' : 'warning'}">${successRate}%</span></p>
+            `;
+            summary.style.display = 'block';
+        }
+        
+        function clearOutput() {
+            document.getElementById('output').innerHTML = '';
+            document.getElementById('summary').style.display = 'none';
+        }
+    </script>
+</body>
+</html> 

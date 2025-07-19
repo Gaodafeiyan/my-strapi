@@ -1,10 +1,10 @@
 /**
- * wallet-balance router
+ * ai-token-withdraw router
  */
 
 import { factories } from '@strapi/strapi';
 
-export default factories.createCoreRouter('api::wallet-balance.wallet-balance' as any, {
+export default factories.createCoreRouter('api::ai-token-withdraw.ai-token-withdraw' as any, {
   config: {
     find: {
       policies: ['plugin::users-permissions.isAuthenticated'],

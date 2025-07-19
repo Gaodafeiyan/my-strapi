@@ -1,0 +1,48 @@
+{
+  "kind": "collectionType",
+  "collectionName": "ai_token_withdraws",
+  "info": {
+    "singularName": "ai-token-withdraw",
+    "pluralName": "ai-token-withdraws",
+    "displayName": "AiTokenWithdraw"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "toAddress": {
+      "type": "string",
+      "required": true
+    },
+    "amountAI": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8
+    },
+    "txHash": {
+      "type": "string",
+      "unique": true
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["pending", "processing", "success", "fail"]
+    },
+    "chain": {
+      "type": "enumeration",
+      "enum": ["SOLANA", "BSC", "ETH"],
+      "default": "SOLANA"
+    },
+    "feeGas": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "ai_token_withdraws"
+    }
+  }
+} 

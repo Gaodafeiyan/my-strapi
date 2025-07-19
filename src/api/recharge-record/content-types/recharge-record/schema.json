@@ -1,0 +1,65 @@
+{
+  "kind": "collectionType",
+  "collectionName": "recharge_records",
+  "info": {
+    "singularName": "recharge-record",
+    "pluralName": "recharge-records",
+    "displayName": "RechargeRecord"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "recharge_records"
+    },
+    "amount": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8,
+      "required": true
+    },
+    "fromAddress": {
+      "type": "string",
+      "required": true
+    },
+    "toAddress": {
+      "type": "string",
+      "required": true
+    },
+    "txHash": {
+      "type": "string",
+      "required": true
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["pending", "confirmed", "failed"],
+      "default": "pending"
+    },
+    "confirmedAt": {
+      "type": "datetime"
+    },
+    "chain": {
+      "type": "enumeration",
+      "enum": ["BSC", "ETH", "POLYGON"],
+      "default": "BSC"
+    },
+    "blockNumber": {
+      "type": "biginteger"
+    },
+    "gasUsed": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8
+    },
+    "gasPrice": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8
+    }
+  }
+} 

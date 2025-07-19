@@ -1,10 +1,10 @@
 /**
- * wallet-balance router
+ * usdt-withdraw router
  */
 
 import { factories } from '@strapi/strapi';
 
-export default factories.createCoreRouter('api::wallet-balance.wallet-balance' as any, {
+export default factories.createCoreRouter('api::usdt-withdraw.usdt-withdraw' as any, {
   config: {
     find: {
       policies: ['plugin::users-permissions.isAuthenticated'],

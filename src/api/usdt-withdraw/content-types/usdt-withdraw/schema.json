@@ -1,0 +1,60 @@
+{
+  "kind": "collectionType",
+  "collectionName": "usdt_withdraws",
+  "info": {
+    "singularName": "usdt-withdraw",
+    "pluralName": "usdt-withdraws",
+    "displayName": "USDTWithdraw"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "usdt_withdraws"
+    },
+    "amountUSDT": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8,
+      "required": true
+    },
+    "toAddress": {
+      "type": "string",
+      "required": true
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["pending", "processing", "success", "failed"],
+      "default": "pending"
+    },
+    "txHash": {
+      "type": "string"
+    },
+    "fee": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8,
+      "default": 0.01
+    },
+    "processedAt": {
+      "type": "datetime"
+    },
+    "errorMessage": {
+      "type": "text"
+    },
+    "chain": {
+      "type": "enumeration",
+      "enum": ["BSC", "ETH", "POLYGON"],
+      "default": "BSC"
+    },
+    "requestedAt": {
+      "type": "datetime",
+      "default": "now"
+    }
+  }
+} 

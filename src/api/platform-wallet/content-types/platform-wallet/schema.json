@@ -1,0 +1,52 @@
+{
+  "kind": "collectionType",
+  "collectionName": "platform_wallets",
+  "info": {
+    "singularName": "platform-wallet",
+    "pluralName": "platform-wallets",
+    "displayName": "PlatformWallet"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "address": {
+      "type": "string",
+      "required": true
+    },
+    "privateKey": {
+      "type": "text",
+      "private": true
+    },
+    "chain": {
+      "type": "enumeration",
+      "enum": ["BSC", "ETH", "POLYGON"],
+      "default": "BSC"
+    },
+    "tokenType": {
+      "type": "enumeration",
+      "enum": ["USDT", "AI_TOKEN", "BNB"],
+      "default": "AI_TOKEN"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "balance": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8
+    },
+    "lastUpdated": {
+      "type": "datetime"
+    },
+    "description": {
+      "type": "text"
+    }
+  }
+} 

@@ -116,6 +116,24 @@
       "target": "api::withdraw-request.withdraw-request",
       "mappedBy": "user"
     },
+    "ai_token_withdraws": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::ai-token-withdraw.ai-token-withdraw",
+      "mappedBy": "user"
+    },
+    "usdt_withdraws": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::usdt-withdraw.usdt-withdraw",
+      "mappedBy": "user"
+    },
+    "recharge_records": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::recharge-record.recharge-record",
+      "mappedBy": "user"
+    },
     "lottery_spins": {
       "type": "relation",
       "relation": "oneToMany",

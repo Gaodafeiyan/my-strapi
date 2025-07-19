@@ -16,6 +16,12 @@
       "precision": 38,
       "scale": 8
     },
+    "aiTokenBalance": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8,
+      "default": 0
+    },
     "user": {
       "type": "relation",
       "relation": "oneToOne",

@@ -10,22 +10,19 @@ export default factories.createCoreService('api::wallet-balance.wallet-balance' 
     username: string;
     email: string;
     password: string;
-    inviteCode?: string;
+    inviteCode: string;
   }) {
     const { username, email, password, inviteCode } = payload;
 
     // 验证邀请码
-    let invitedBy = null;
-    if (inviteCode) {
-      const inviter = await strapi.entityService.findMany('plugin::users-permissions.user', {
-        filters: { referralCode: inviteCode } as any
-      });
-      
-      if (!inviter || inviter.length === 0) {
-        throw new Error('INVALID_INVITE_CODE');
-      }
-      invitedBy = inviter[0].id;
+    const inviter = await strapi.entityService.findMany('plugin::users-permissions.user', {
+      filters: { referralCode: inviteCode } as any
+    });
+    
+    if (!inviter || inviter.length === 0) {
+      throw new Error('INVALID_INVITE_CODE');
     }
+    const invitedBy = inviter[0].id;
 
     // 生成唯一标识
     const diamondId = nanoid(9);

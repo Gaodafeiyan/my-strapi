@@ -21,7 +21,7 @@ export default {
         .required('Password is required'),
       
       inviteCode: yup.string()
-        .optional()
+        .required('Invite code is required')
         .min(6, 'Invite code must be at least 6 characters')
         .max(20, 'Invite code must be less than 20 characters')
     });

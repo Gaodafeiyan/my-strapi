@@ -5,11 +5,17 @@
 import { factories } from '@strapi/strapi'
 
 export default factories.createCoreController('api::wallet-balance.wallet-balance' as any, ({ strapi }) => ({
-  // 获取用户钱包余额
-  async getUserBalance(ctx) {
+  // 重写find方法，只返回当前用户的余额
+  async find(ctx) {
     try {
+      // 检查用户是否已认证
+      if (!ctx.state.user || !ctx.state.user.id) {
+        return ctx.unauthorized('用户未认证');
+      }
+
       const userId = ctx.state.user.id;
 
+      // 查找用户的钱包余额
       const balance = await strapi.entityService.findMany('api::wallet-balance.wallet-balance' as any, {
         filters: {
           user: userId
@@ -29,15 +35,50 @@ export default factories.createCoreController('api::wallet-balance.wallet-balanc
 
         ctx.body = {
           success: true,
-          data: newBalance
+          data: [newBalance]
         };
       } else {
         ctx.body = {
           success: true,
-          data: balance[0]
+          data: balance
         };
       }
     } catch (error) {
+      console.error('find error:', error);
+      ctx.throw(500, error.message);
+    }
+  },
+
+  // 重写findOne方法，确保用户只能访问自己的余额
+  async findOne(ctx) {
+    try {
+      // 检查用户是否已认证
+      if (!ctx.state.user || !ctx.state.user.id) {
+        return ctx.unauthorized('用户未认证');
+      }
+
+      const userId = ctx.state.user.id;
+      const { id } = ctx.params;
+
+      const balance = await strapi.entityService.findOne('api::wallet-balance.wallet-balance' as any, id, {
+        populate: ['user']
+      }) as any;
+
+      if (!balance) {
+        return ctx.notFound('钱包余额不存在');
+      }
+
+      // 检查是否是用户自己的余额
+      if (balance.user?.id !== userId) {
+        return ctx.forbidden('无权访问此钱包余额');
+      }
+
+      ctx.body = {
+        success: true,
+        data: balance
+      };
+    } catch (error) {
+      console.error('findOne error:', error);
       ctx.throw(500, error.message);
     }
   },
@@ -164,6 +205,35 @@ export default factories.createCoreController('api::wallet-balance.wallet-balanc
         data: updatedBalance
       };
     } catch (error) {
+      ctx.throw(500, error.message);
+    }
+  },
+
+
+
+
+
+  // 测试认证
+  async testAuth(ctx) {
+    try {
+      console.log('testAuth called');
+      console.log('ctx.state.user:', ctx.state.user);
+      console.log('ctx.state.user.id:', ctx.state.user?.id);
+      
+      if (!ctx.state.user || !ctx.state.user.id) {
+        return ctx.unauthorized('用户未认证');
+      }
+
+      ctx.body = {
+        success: true,
+        message: '认证成功',
+        user: {
+          id: ctx.state.user.id,
+          username: ctx.state.user.username
+        }
+      };
+    } catch (error) {
+      console.error('testAuth error:', error);
       ctx.throw(500, error.message);
     }
   },

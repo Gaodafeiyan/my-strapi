@@ -18,8 +18,5 @@ export default factories.createCoreRouter('api::wallet-balance.wallet-balance' a
     update: {
       auth: { scope: ['api::wallet-balance.wallet-balance'] },
     },
-    delete: {
-      auth: { scope: ['api::wallet-balance.wallet-balance'] },
-    },
   },
 }); 

@@ -50,6 +50,34 @@ export default factories.createCoreController('api::subscription-order.subscript
         return ctx.badRequest('LIMIT_EXCEEDED');
       }
 
+      // 检查解锁条件（500档默认解锁，其它档需满足上一档赎回次数）
+      if (plan.unlockAfterCnt > 0) {
+        // 获取上一档计划
+        const previousPlan = await strapi.entityService.findMany('api::subscription-plan.subscription-plan' as any, {
+          filters: {
+            priceUSDT: { $lt: plan.priceUSDT },
+            enabled: true
+          },
+          sort: { priceUSDT: 'desc' },
+          limit: 1
+        });
+
+        if (previousPlan && previousPlan.length > 0) {
+          const prevPlan = previousPlan[0];
+          const finishedOrders = await strapi.entityService.findMany('api::subscription-order.subscription-order' as any, {
+            filters: {
+              user: userId,
+              plan: prevPlan.id,
+              orderState: 'finished'
+            }
+          });
+
+          if (finishedOrders.length < plan.unlockAfterCnt) {
+            return ctx.badRequest('UNLOCK_CONDITION_NOT_MET');
+          }
+        }
+      }
+
       // 计算总价
       const totalPrice = plan.priceUSDT * quantity;
 
@@ -71,6 +99,12 @@ export default factories.createCoreController('api::subscription-order.subscript
       const startAt = new Date();
       const endAt = new Date(startAt.getTime() + plan.cycleDays * 24 * 60 * 60 * 1000);
 
+      // 计算AI代币数量
+      const aiTokenQty = plan.aiTokenBonusPct ? (totalPrice * plan.aiTokenBonusPct / 100) : 0;
+
+      // 计算抽奖次数（每单3次）
+      const lotterySpinQuota = quantity * 3;
+
       // 创建认购订单
       const subscriptionOrder = await strapi.entityService.create('api::subscription-order.subscription-order' as any, {
         data: {
@@ -82,7 +116,8 @@ export default factories.createCoreController('api::subscription-order.subscript
           startAt: startAt,
           endAt: endAt,
           staticYieldUSDT: 0,
-          aiTokenQty: plan.aiTokenBonusPct ? (totalPrice * plan.aiTokenBonusPct / 100) : 0
+          aiTokenQty: aiTokenQty,
+          lotterySpinQuota: lotterySpinQuota
         }
       });
 
@@ -105,8 +140,7 @@ export default factories.createCoreController('api::subscription-order.subscript
         }
       });
 
-      // 触发邀请返佣
-      await strapi.service('api::subscription-order.subscription-order').triggerReferralReward(userId, totalPrice, subscriptionOrder.id);
+      // 注意：邀请返佣现在在订单完成时触发，不在下单时触发
 
       ctx.body = {
         orderId: subscriptionOrder.id,

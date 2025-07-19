@@ -4,4 +4,16 @@
 
 import { factories } from '@strapi/strapi';
 
-export default factories.createCoreRouter('api::lottery-spin.lottery-spin' as any); 
+export default {
+  routes: [
+    {
+      method: 'POST',
+      path: '/lottery/spin',
+      handler: 'lottery-spin.spin',
+      config: {
+        policies: [],
+        middlewares: [],
+      },
+    },
+  ],
+}; 

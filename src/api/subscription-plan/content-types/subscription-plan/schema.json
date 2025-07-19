@@ -4,45 +4,56 @@
   "info": {
     "singularName": "subscription-plan",
     "pluralName": "subscription-plans",
-    "displayName": "SubscriptionPlan"
+    "displayName": "SubscriptionPlan",
+    "description": ""
   },
   "options": {
     "draftAndPublish": false
   },
   "pluginOptions": {},
   "attributes": {
-    "title": {
-      "type": "string"
+    "name": {
+      "type": "string",
+      "required": true
     },
     "priceUSDT": {
       "type": "decimal",
-      "precision": 38,
-      "scale": 8
+      "required": true
     },
     "cycleDays": {
-      "type": "integer"
+      "type": "integer",
+      "required": true
     },
     "staticYieldPct": {
       "type": "decimal",
-      "precision": 5,
-      "scale": 2
+      "required": true
+    },
+    "maxPurchaseCnt": {
+      "type": "integer",
+      "required": true
     },
     "aiTokenBonusPct": {
       "type": "decimal",
-      "precision": 5,
-      "scale": 2
-    },
-    "maxPurchaseCnt": {
-      "type": "integer"
+      "required": true
     },
     "unlockAfterCnt": {
-      "type": "integer"
+      "type": "integer",
+      "required": true
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "referralPct": {
+      "type": "decimal",
+      "required": true,
+      "description": "邀请返佣百分比"
     },
     "subscription_orders": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::subscription-order.subscription-order",
-      "mappedBy": "subscription_plan"
+      "mappedBy": "plan"
     }
   }
 } 

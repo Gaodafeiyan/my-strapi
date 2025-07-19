@@ -4,40 +4,19 @@
   "info": {
     "singularName": "subscription-order",
     "pluralName": "subscription-orders",
-    "displayName": "SubscriptionOrder"
+    "displayName": "SubscriptionOrder",
+    "description": ""
   },
   "options": {
     "draftAndPublish": false
   },
   "pluginOptions": {},
   "attributes": {
-    "orderState": {
-      "type": "enumeration",
-      "enum": ["pending", "active", "finished"]
-    },
-    "startAt": {
-      "type": "datetime"
-    },
-    "endAt": {
-      "type": "datetime"
-    },
-    "principalUSDT": {
-      "type": "decimal",
-      "precision": 38,
-      "scale": 8
-    },
-    "staticYieldUSDT": {
-      "type": "decimal",
-      "precision": 38,
-      "scale": 8
-    },
-    "aiTokenQty": {
-      "type": "decimal",
-      "precision": 38,
-      "scale": 8
-    },
-    "redeemedAt": {
-      "type": "datetime"
+    "plan": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::subscription-plan.subscription-plan",
+      "inversedBy": "subscription_orders"
     },
     "user": {
       "type": "relation",
@@ -45,17 +24,42 @@
       "target": "plugin::users-permissions.user",
       "inversedBy": "subscription_orders"
     },
-    "subscription_plan": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::subscription-plan.subscription-plan",
-      "inversedBy": "subscription_orders"
+    "quantity": {
+      "type": "integer",
+      "required": true
     },
-    "referral_rewards": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::referral-reward.referral-reward",
-      "mappedBy": "fromOrder"
+    "principalUSDT": {
+      "type": "decimal",
+      "required": true
+    },
+    "orderState": {
+      "type": "enumeration",
+      "enum": [
+        "active",
+        "finished"
+      ],
+      "default": "active"
+    },
+    "startAt": {
+      "type": "datetime",
+      "required": true
+    },
+    "endAt": {
+      "type": "datetime",
+      "required": true
+    },
+    "staticYieldUSDT": {
+      "type": "decimal",
+      "default": 0
+    },
+    "aiTokenQty": {
+      "type": "decimal",
+      "default": 0
+    },
+    "lotterySpinQuota": {
+      "type": "integer",
+      "default": 0,
+      "description": "抽奖次数配额"
     }
   }
 } 

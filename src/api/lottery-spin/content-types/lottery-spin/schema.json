@@ -4,29 +4,34 @@
   "info": {
     "singularName": "lottery-spin",
     "pluralName": "lottery-spins",
-    "displayName": "LotterySpin"
+    "displayName": "LotterySpin",
+    "description": ""
   },
   "options": {
     "draftAndPublish": false
   },
   "pluginOptions": {},
   "attributes": {
-    "result": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::lottery-prize.lottery-prize",
-      "inversedBy": "lottery_spins"
-    },
     "user": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
       "inversedBy": "lottery_spins"
     },
-    "spentUSDT": {
+    "prize": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::lottery-prize.lottery-prize",
+      "mappedBy": "lottery_spins"
+    },
+    "spinCostUSDT": {
       "type": "decimal",
-      "precision": 38,
-      "scale": 8
+      "default": 0,
+      "description": "本次抽奖消耗的USDT"
+    },
+    "result": {
+      "type": "json",
+      "description": "抽奖结果详情"
     }
   }
 } 

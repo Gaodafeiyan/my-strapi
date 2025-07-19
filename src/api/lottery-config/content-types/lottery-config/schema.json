@@ -4,17 +4,22 @@
   "info": {
     "singularName": "lottery-config",
     "pluralName": "lottery-configs",
-    "displayName": "LotteryConfig"
+    "displayName": "LotteryConfig",
+    "description": ""
   },
   "options": {
     "draftAndPublish": false
   },
   "pluginOptions": {},
   "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
     "spinCostUSDT": {
       "type": "decimal",
-      "precision": 38,
-      "scale": 8
+      "default": 0,
+      "description": "每次抽奖消耗的USDT，0表示免费"
     },
     "enabled": {
       "type": "boolean",

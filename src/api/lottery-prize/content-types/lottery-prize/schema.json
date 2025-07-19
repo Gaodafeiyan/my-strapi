@@ -4,34 +4,53 @@
   "info": {
     "singularName": "lottery-prize",
     "pluralName": "lottery-prizes",
-    "displayName": "LotteryPrize"
+    "displayName": "LotteryPrize",
+    "description": ""
   },
   "options": {
     "draftAndPublish": false
   },
   "pluginOptions": {},
   "attributes": {
-    "title": {
-      "type": "string"
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "prizeType": {
+      "type": "enumeration",
+      "enum": [
+        "usdt",
+        "ai_token",
+        "physical"
+      ],
+      "required": true
+    },
+    "amount": {
+      "type": "decimal",
+      "required": true
     },
     "probabilityWeight": {
-      "type": "integer"
+      "type": "integer",
+      "required": true,
+      "description": "概率权重"
     },
     "stockQty": {
       "type": "integer",
-      "default": -1
+      "default": -1,
+      "description": "库存数量，-1表示无限"
     },
-    "image": {
-      "type": "media",
-      "multiple": false,
-      "required": false,
-      "allowedTypes": ["images"]
+    "enabled": {
+      "type": "boolean",
+      "default": true
     },
     "lottery_spins": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::lottery-spin.lottery-spin",
-      "mappedBy": "result"
+      "mappedBy": "prize"
     }
   }
 } 

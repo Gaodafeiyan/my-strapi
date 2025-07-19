@@ -1,0 +1,1455 @@
+openapi: 3.0.3
+info:
+  title: Strapi API Documentation
+  description: 完整的系统API文档，包含认证、钱包、认购、返佣、抽奖、商店等功能
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+
+servers:
+  - url: http://localhost:1337/api
+    description: Development server
+  - url: https://api.example.com/api
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+paths:
+  # 认证系统
+  /auth/local/register:
+    post:
+      tags:
+        - Authentication
+      summary: 用户注册
+      description: 用户注册（支持邀请码）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - password
+                - inviteCode
+              properties:
+                username:
+                  type: string
+                  description: 用户名，3-20字符
+                  minLength: 3
+                  maxLength: 20
+                email:
+                  type: string
+                  format: email
+                  description: 邮箱地址
+                password:
+                  type: string
+                  description: 密码，6-20字符
+                  minLength: 6
+                  maxLength: 20
+                inviteCode:
+                  type: string
+                  description: 邀请码
+      responses:
+        '200':
+          description: 注册成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jwt:
+                    type: string
+                    description: JWT Token
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: 请求参数错误
+        '409':
+          description: 用户名或邮箱已存在
+
+  /auth/local:
+    post:
+      tags:
+        - Authentication
+      summary: 用户登录
+      description: 用户登录
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - identifier
+                - password
+              properties:
+                identifier:
+                  type: string
+                  description: 用户名或邮箱
+                password:
+                  type: string
+                  description: 密码
+      responses:
+        '200':
+          description: 登录成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jwt:
+                    type: string
+                    description: JWT Token
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: 请求参数错误
+        '401':
+          description: 用户名或密码错误
+
+  /users/me:
+    get:
+      tags:
+        - Authentication
+      summary: 获取当前用户信息
+      description: 获取当前登录用户信息
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: 未认证或Token无效
+
+  # 钱包系统
+  /wallet-balances:
+    get:
+      tags:
+        - Wallet
+      summary: 获取钱包余额
+      description: 获取当前用户钱包余额
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WalletBalance'
+                  meta:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          description: 未认证或Token无效
+
+  /wallet-txes:
+    get:
+      tags:
+        - Wallet
+      summary: 获取交易记录
+      description: 获取当前用户钱包交易记录
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: sort
+          in: query
+          description: 排序字段，如 createdAt:desc
+          schema:
+            type: string
+        - name: pagination[page]
+          in: query
+          description: 页码，默认1
+          schema:
+            type: integer
+            default: 1
+        - name: pagination[pageSize]
+          in: query
+          description: 每页数量，默认25
+          schema:
+            type: integer
+            default: 25
+        - name: filters[txType]
+          in: query
+          description: 交易类型过滤
+          schema:
+            type: string
+        - name: filters[direction]
+          in: query
+          description: 方向过滤（in/out）
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WalletTx'
+                  meta:
+                    $ref: '#/components/schemas/Pagination'
+
+  /deposit-addresses:
+    get:
+      tags:
+        - Wallet
+      summary: 获取充值地址
+      description: 获取当前用户充值地址
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DepositAddress'
+                  meta:
+                    $ref: '#/components/schemas/Pagination'
+
+  /withdraw-requests:
+    post:
+      tags:
+        - Wallet
+      summary: 创建提现请求
+      description: 创建提现请求
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - amountUSDT
+                    - toAddress
+                  properties:
+                    amountUSDT:
+                      type: string
+                      description: 提现金额
+                      pattern: '^\d+\.\d{8}$'
+                    toAddress:
+                      type: string
+                      description: 提现地址（BEP-20格式）
+                      pattern: '^0x[a-fA-F0-9]{40}$'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/WithdrawRequest'
+        '400':
+          description: 余额不足或地址格式错误
+
+    get:
+      tags:
+        - Wallet
+      summary: 获取提现记录
+      description: 获取提现记录
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: sort
+          in: query
+          description: 排序字段
+          schema:
+            type: string
+        - name: pagination[page]
+          in: query
+          description: 页码
+          schema:
+            type: integer
+        - name: pagination[pageSize]
+          in: query
+          description: 每页数量
+          schema:
+            type: integer
+        - name: filters[status]
+          in: query
+          description: 状态过滤
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WithdrawRequest'
+                  meta:
+                    $ref: '#/components/schemas/Pagination'
+
+  # 认购系统
+  /subscription-plans:
+    get:
+      tags:
+        - Subscription
+      summary: 获取认购计划列表
+      description: 获取所有可用的认购计划
+      parameters:
+        - name: filters[enabled]
+          in: query
+          description: 是否启用过滤
+          schema:
+            type: boolean
+        - name: sort
+          in: query
+          description: 排序字段，如 priceUSDT:asc
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SubscriptionPlan'
+                  meta:
+                    $ref: '#/components/schemas/Pagination'
+
+  /subscription-plans/{id}:
+    get:
+      tags:
+        - Subscription
+      summary: 获取单个认购计划
+      description: 获取单个认购计划详情
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 计划ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/SubscriptionPlan'
+
+  /subscription-orders:
+    post:
+      tags:
+        - Subscription
+      summary: 创建认购订单
+      description: 创建认购订单
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - planId
+                  properties:
+                    planId:
+                      type: integer
+                      description: 认购计划ID
+                    quantity:
+                      type: integer
+                      description: 购买数量，默认1
+                      default: 1
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderId:
+                    type: integer
+                  walletTxId:
+                    type: integer
+                  message:
+                    type: string
+        '400':
+          description: 计划不存在、余额不足、超过购买次数限制等
+
+    get:
+      tags:
+        - Subscription
+      summary: 获取认购订单列表
+      description: 获取当前用户的认购订单
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: sort
+          in: query
+          description: 排序字段，如 createdAt:desc
+          schema:
+            type: string
+        - name: pagination[page]
+          in: query
+          description: 页码，默认1
+          schema:
+            type: integer
+            default: 1
+        - name: pagination[pageSize]
+          in: query
+          description: 每页数量，默认25
+          schema:
+            type: integer
+            default: 25
+        - name: filters[orderState]
+          in: query
+          description: 订单状态过滤
+          schema:
+            type: string
+        - name: filters[plan]
+          in: query
+          description: 计划ID过滤
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SubscriptionOrder'
+                  meta:
+                    $ref: '#/components/schemas/Pagination'
+
+  /subscription-orders/{id}:
+    get:
+      tags:
+        - Subscription
+      summary: 获取单个认购订单
+      description: 获取单个认购订单详情
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 订单ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/SubscriptionOrder'
+
+  # 返佣系统
+  /referral-rewards:
+    get:
+      tags:
+        - Referral
+      summary: 获取返佣记录
+      description: 获取当前用户的返佣记录
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: sort
+          in: query
+          description: 排序字段，如 createdAt:desc
+          schema:
+            type: string
+        - name: pagination[page]
+          in: query
+          description: 页码，默认1
+          schema:
+            type: integer
+            default: 1
+        - name: pagination[pageSize]
+          in: query
+          description: 每页数量，默认25
+          schema:
+            type: integer
+            default: 25
+        - name: filters[referrer]
+          in: query
+          description: 推荐人ID过滤
+          schema:
+            type: integer
+        - name: filters[fromUser]
+          in: query
+          description: 被推荐人ID过滤
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ReferralReward'
+                  meta:
+                    $ref: '#/components/schemas/Pagination'
+
+  /referral-rewards/{id}:
+    get:
+      tags:
+        - Referral
+      summary: 获取单个返佣记录
+      description: 获取单个返佣记录详情
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 返佣记录ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ReferralReward'
+
+  # 抽奖系统
+  /lottery-configs:
+    get:
+      tags:
+        - Lottery
+      summary: 获取抽奖配置
+      description: 获取抽奖配置信息
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LotteryConfig'
+                  meta:
+                    $ref: '#/components/schemas/Pagination'
+
+  /lottery-prizes:
+    get:
+      tags:
+        - Lottery
+      summary: 获取奖品列表
+      description: 获取所有抽奖奖品
+      parameters:
+        - name: filters[enabled]
+          in: query
+          description: 是否启用过滤
+          schema:
+            type: boolean
+        - name: sort
+          in: query
+          description: 排序字段，如 probabilityWeight:desc
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LotteryPrize'
+                  meta:
+                    $ref: '#/components/schemas/Pagination'
+
+  /lottery-prizes/{id}:
+    get:
+      tags:
+        - Lottery
+      summary: 获取单个奖品
+      description: 获取单个奖品详情
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 奖品ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/LotteryPrize'
+
+  /lottery/spin:
+    post:
+      tags:
+        - Lottery
+      summary: 执行抽奖
+      description: 执行抽奖
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  prize:
+                    $ref: '#/components/schemas/LotteryPrize'
+                  spinCost:
+                    type: string
+                  remainingQuota:
+                    type: integer
+        '400':
+          description: 抽奖次数不足、余额不足、奖品库存不足等
+
+  /lottery-spins:
+    get:
+      tags:
+        - Lottery
+      summary: 获取抽奖记录
+      description: 获取当前用户的抽奖记录
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: sort
+          in: query
+          description: 排序字段，如 createdAt:desc
+          schema:
+            type: string
+        - name: pagination[page]
+          in: query
+          description: 页码，默认1
+          schema:
+            type: integer
+            default: 1
+        - name: pagination[pageSize]
+          in: query
+          description: 每页数量，默认25
+          schema:
+            type: integer
+            default: 25
+        - name: filters[prize]
+          in: query
+          description: 奖品ID过滤
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LotterySpin'
+                  meta:
+                    $ref: '#/components/schemas/Pagination'
+
+  /lottery-spins/{id}:
+    get:
+      tags:
+        - Lottery
+      summary: 获取单个抽奖记录
+      description: 获取单个抽奖记录详情
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 抽奖记录ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/LotterySpin'
+
+  # 商店系统
+  /store-products:
+    get:
+      tags:
+        - Shop
+      summary: 获取商品列表
+      description: 获取所有商店商品
+      parameters:
+        - name: filters[enabled]
+          in: query
+          description: 是否启用过滤
+          schema:
+            type: boolean
+        - name: sort
+          in: query
+          description: 排序字段，如 price:asc
+          schema:
+            type: string
+        - name: pagination[page]
+          in: query
+          description: 页码，默认1
+          schema:
+            type: integer
+            default: 1
+        - name: pagination[pageSize]
+          in: query
+          description: 每页数量，默认25
+          schema:
+            type: integer
+            default: 25
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StoreProduct'
+                  meta:
+                    $ref: '#/components/schemas/Pagination'
+
+  /store-products/{id}:
+    get:
+      tags:
+        - Shop
+      summary: 获取单个商品
+      description: 获取单个商品详情
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 商品ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/StoreProduct'
+
+  /shop-orders:
+    post:
+      tags:
+        - Shop
+      summary: 创建商店订单
+      description: 创建商店订单
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - productId
+                    - quantity
+                    - shippingAddress
+                    - shippingPhone
+                    - shippingName
+                  properties:
+                    productId:
+                      type: integer
+                      description: 商品ID
+                    quantity:
+                      type: integer
+                      description: 购买数量
+                      minimum: 1
+                    shippingAddress:
+                      type: string
+                      description: 收货地址
+                    shippingPhone:
+                      type: string
+                      description: 收货电话
+                    shippingName:
+                      type: string
+                      description: 收货人姓名
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ShopOrder'
+        '400':
+          description: 商品不存在、库存不足、余额不足等
+
+    get:
+      tags:
+        - Shop
+      summary: 获取商店订单列表
+      description: 获取当前用户的商店订单
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: sort
+          in: query
+          description: 排序字段，如 createdAt:desc
+          schema:
+            type: string
+        - name: pagination[page]
+          in: query
+          description: 页码，默认1
+          schema:
+            type: integer
+            default: 1
+        - name: pagination[pageSize]
+          in: query
+          description: 每页数量，默认25
+          schema:
+            type: integer
+            default: 25
+        - name: filters[orderStatus]
+          in: query
+          description: 订单状态过滤
+          schema:
+            type: string
+        - name: filters[product]
+          in: query
+          description: 商品ID过滤
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShopOrder'
+                  meta:
+                    $ref: '#/components/schemas/Pagination'
+
+  /shop-orders/{id}:
+    get:
+      tags:
+        - Shop
+      summary: 获取单个商店订单
+      description: 获取单个商店订单详情
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 订单ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ShopOrder'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        diamondId:
+          type: string
+          description: 钻石ID
+        referralCode:
+          type: string
+          description: 推荐码
+        invitedBy:
+          $ref: '#/components/schemas/User'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    WalletBalance:
+      type: object
+      properties:
+        id:
+          type: integer
+        attributes:
+          type: object
+          properties:
+            amount:
+              type: string
+              description: 余额金额，精确到8位小数
+            user:
+              type: object
+              properties:
+                data:
+                  $ref: '#/components/schemas/User'
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    WalletTx:
+      type: object
+      properties:
+        id:
+          type: integer
+        attributes:
+          type: object
+          properties:
+            txType:
+              type: string
+              enum: [deposit, withdraw, subscription, static, referral, principal_return, lottery_spin, lottery_prize, aiToken, shop_order]
+              description: 交易类型
+            direction:
+              type: string
+              enum: [in, out]
+              description: 方向
+            amount:
+              type: string
+              description: 金额
+            walletStatus:
+              type: string
+              enum: [success, pending, failed]
+              description: 状态
+            txHash:
+              type: string
+              description: 区块链交易哈希
+            asset:
+              type: integer
+              description: 资产ID（1=USDT）
+            user:
+              type: object
+              properties:
+                data:
+                  $ref: '#/components/schemas/User'
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    DepositAddress:
+      type: object
+      properties:
+        id:
+          type: integer
+        attributes:
+          type: object
+          properties:
+            address:
+              type: string
+              description: BSC网络地址
+            network:
+              type: string
+              description: 网络类型（BSC）
+            user:
+              type: object
+              properties:
+                data:
+                  $ref: '#/components/schemas/User'
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    WithdrawRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        attributes:
+          type: object
+          properties:
+            amountUSDT:
+              type: string
+              description: 提现金额
+            toAddress:
+              type: string
+              description: 提现地址
+            status:
+              type: string
+              enum: [pending, success, failed]
+              description: 状态
+            txHash:
+              type: string
+              description: 区块链交易哈希
+            user:
+              type: object
+              properties:
+                data:
+                  $ref: '#/components/schemas/User'
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    SubscriptionPlan:
+      type: object
+      properties:
+        id:
+          type: integer
+        attributes:
+          type: object
+          properties:
+            name:
+              type: string
+              description: 计划名称
+            priceUSDT:
+              type: string
+              description: 本金金额
+            cycleDays:
+              type: integer
+              description: 周期天数
+            staticYieldPct:
+              type: string
+              description: 静态收益率
+            maxPurchaseCnt:
+              type: integer
+              description: 最大购买次数
+            aiTokenBonusPct:
+              type: string
+              description: AI代币赠送比例
+            unlockAfterCnt:
+              type: integer
+              description: 解锁条件（完成次数）
+            enabled:
+              type: boolean
+              description: 是否启用
+            referralPct:
+              type: string
+              description: 返佣比例
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    SubscriptionOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+        attributes:
+          type: object
+          properties:
+            quantity:
+              type: integer
+              description: 购买数量
+            principalUSDT:
+              type: string
+              description: 本金金额
+            orderState:
+              type: string
+              enum: [active, finished]
+              description: 订单状态
+            startAt:
+              type: string
+              format: date-time
+              description: 开始时间
+            endAt:
+              type: string
+              format: date-time
+              description: 结束时间
+            staticYieldUSDT:
+              type: string
+              description: 累计静态收益
+            aiTokenQty:
+              type: string
+              description: AI代币数量
+            lotterySpinQuota:
+              type: integer
+              description: 抽奖次数配额
+            plan:
+              type: object
+              properties:
+                data:
+                  $ref: '#/components/schemas/SubscriptionPlan'
+            user:
+              type: object
+              properties:
+                data:
+                  $ref: '#/components/schemas/User'
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    ReferralReward:
+      type: object
+      properties:
+        id:
+          type: integer
+        attributes:
+          type: object
+          properties:
+            amountUSDT:
+              type: string
+              description: 返佣金额
+            referrer:
+              type: object
+              properties:
+                data:
+                  $ref: '#/components/schemas/User'
+            fromUser:
+              type: object
+              properties:
+                data:
+                  $ref: '#/components/schemas/User'
+            fromOrder:
+              type: object
+              properties:
+                data:
+                  $ref: '#/components/schemas/SubscriptionOrder'
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    LotteryConfig:
+      type: object
+      properties:
+        id:
+          type: integer
+        attributes:
+          type: object
+          properties:
+            name:
+              type: string
+              description: 抽奖活动名称
+            spinCostUSDT:
+              type: string
+              description: 每次抽奖费用（0表示免费）
+            enabled:
+              type: boolean
+              description: 是否启用
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    LotteryPrize:
+      type: object
+      properties:
+        id:
+          type: integer
+        attributes:
+          type: object
+          properties:
+            name:
+              type: string
+              description: 奖品名称
+            description:
+              type: string
+              description: 奖品描述
+            prizeType:
+              type: string
+              enum: [usdt, ai_token, physical]
+              description: 奖品类型
+            amount:
+              type: string
+              description: 奖品金额
+            probabilityWeight:
+              type: integer
+              description: 概率权重
+            stockQty:
+              type: integer
+              description: 库存数量（-1表示无限）
+            enabled:
+              type: boolean
+              description: 是否启用
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    LotterySpin:
+      type: object
+      properties:
+        id:
+          type: integer
+        attributes:
+          type: object
+          properties:
+            spinCostUSDT:
+              type: string
+              description: 抽奖费用
+            result:
+              type: object
+              properties:
+                prizeName:
+                  type: string
+                  description: 奖品名称
+                prizeType:
+                  type: string
+                  description: 奖品类型
+                amount:
+                  type: string
+                  description: 奖品金额
+            prize:
+              type: object
+              properties:
+                data:
+                  $ref: '#/components/schemas/LotteryPrize'
+            user:
+              type: object
+              properties:
+                data:
+                  $ref: '#/components/schemas/User'
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    StoreProduct:
+      type: object
+      properties:
+        id:
+          type: integer
+        attributes:
+          type: object
+          properties:
+            name:
+              type: string
+              description: 商品名称
+            description:
+              type: string
+              description: 商品描述
+            price:
+              type: string
+              description: 当前价格
+            originalPrice:
+              type: string
+              description: 原价
+            stockQty:
+              type: integer
+              description: 库存数量
+            category:
+              type: string
+              description: 商品分类
+            image:
+              type: string
+              description: 商品图片URL
+            enabled:
+              type: boolean
+              description: 是否启用
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    ShopOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+        attributes:
+          type: object
+          properties:
+            quantity:
+              type: integer
+              description: 购买数量
+            totalAmount:
+              type: string
+              description: 订单总金额
+            orderStatus:
+              type: string
+              enum: [pending, paid, shipped, delivered, cancelled]
+              description: 订单状态
+            shippingAddress:
+              type: string
+              description: 收货地址
+            shippingPhone:
+              type: string
+              description: 收货电话
+            shippingName:
+              type: string
+              description: 收货人姓名
+            trackingNo:
+              type: string
+              description: 物流单号
+            product:
+              type: object
+              properties:
+                data:
+                  $ref: '#/components/schemas/StoreProduct'
+            user:
+              type: object
+              properties:
+                data:
+                  $ref: '#/components/schemas/User'
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    Pagination:
+      type: object
+      properties:
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+              description: 当前页码
+            pageSize:
+              type: integer
+              description: 每页数量
+            pageCount:
+              type: integer
+              description: 总页数
+            total:
+              type: integer
+              description: 总记录数
+
+tags:
+  - name: Authentication
+    description: 认证相关接口
+  - name: Wallet
+    description: 钱包相关接口
+  - name: Subscription
+    description: 认购相关接口
+  - name: Referral
+    description: 返佣相关接口
+  - name: Lottery
+    description: 抽奖相关接口
+  - name: Shop
+    description: 商店相关接口 

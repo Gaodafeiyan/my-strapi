@@ -25,14 +25,14 @@ export default factories.createCoreService('api::usdt-withdraw.usdt-withdraw' as
         .query('api::wallet-balance.wallet-balance')
         .findOne({ 
           where: { user: userId }, 
-          select: ['amount']
+          select: ['usdtBalance']
         });
 
       if (!balance) {
         throw new Error('钱包余额不存在');
       }
 
-      if (Number(balance.amount) < Number(amountUSDT)) {
+      if (Number(balance.usdtBalance) < Number(amountUSDT)) {
         throw new Error('余额不足');
       }
 
@@ -40,7 +40,7 @@ export default factories.createCoreService('api::usdt-withdraw.usdt-withdraw' as
       await strapi.query('api::wallet-balance.wallet-balance').update({
         where: { user: userId },
         data: { 
-          amount: String(Number(balance.amount) - Number(amountUSDT)) 
+          usdtBalance: String(Number(balance.usdtBalance) - Number(amountUSDT)) 
         }
       });
 

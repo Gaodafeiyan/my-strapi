@@ -11,10 +11,11 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "amount": {
+    "usdtBalance": {
       "type": "decimal",
       "precision": 38,
-      "scale": 8
+      "scale": 8,
+      "default": 0
     },
     "aiTokenBalance": {
       "type": "decimal",

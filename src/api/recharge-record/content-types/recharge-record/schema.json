@@ -48,6 +48,11 @@
       "enum": ["BSC", "ETH", "POLYGON"],
       "default": "BSC"
     },
+    "asset": {
+      "type": "enumeration",
+      "enum": ["USDT", "AI_TOKEN"],
+      "default": "USDT"
+    },
     "blockNumber": {
       "type": "biginteger"
     },

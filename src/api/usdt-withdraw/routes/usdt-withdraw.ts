@@ -7,19 +7,19 @@ import { factories } from '@strapi/strapi';
 export default factories.createCoreRouter('api::usdt-withdraw.usdt-withdraw' as any, {
   config: {
     find: {
-      policies: ['plugin::users-permissions.isAuthenticated'],
+      policies: ['global::isAuthenticated'],
     },
     findOne: {
-      policies: ['plugin::users-permissions.isAuthenticated'],
+      policies: ['global::isAuthenticated'],
     },
     create: {
-      policies: ['plugin::users-permissions.isAuthenticated'],
+      policies: ['global::isAuthenticated'],
     },
     update: {
-      policies: ['plugin::users-permissions.isAuthenticated'],
+      policies: ['global::isAuthenticated'],
     },
     delete: {
-      policies: ['plugin::users-permissions.isAuthenticated'],
+      policies: ['global::isAuthenticated'],
     },
   },
 }); 

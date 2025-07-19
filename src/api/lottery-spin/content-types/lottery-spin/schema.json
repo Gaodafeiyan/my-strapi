@@ -22,7 +22,7 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::lottery-prize.lottery-prize",
-      "mappedBy": "lottery_spins"
+      "inversedBy": "lottery_spins"
     },
     "spinCostUSDT": {
       "type": "decimal",

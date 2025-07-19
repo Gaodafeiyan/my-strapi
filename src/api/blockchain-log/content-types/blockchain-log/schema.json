@@ -1,0 +1,59 @@
+{
+  "kind": "collectionType",
+  "collectionName": "blockchain_logs",
+  "info": {
+    "singularName": "blockchain-log",
+    "pluralName": "blockchain-logs",
+    "displayName": "BlockchainLog"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "chain": {
+      "type": "enumeration",
+      "enum": ["BSC", "ETH", "POLYGON"],
+      "default": "BSC",
+      "required": true
+    },
+    "logType": {
+      "type": "enumeration",
+      "enum": ["deposit", "withdraw", "error", "info"],
+      "required": true
+    },
+    "message": {
+      "type": "text",
+      "required": true
+    },
+    "txHash": {
+      "type": "string"
+    },
+    "blockNumber": {
+      "type": "biginteger"
+    },
+    "fromAddress": {
+      "type": "string"
+    },
+    "toAddress": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["success", "failed", "pending"],
+      "default": "pending"
+    },
+    "errorDetails": {
+      "type": "text"
+    },
+    "processedAt": {
+      "type": "datetime",
+      "default": "now"
+    }
+  }
+} 

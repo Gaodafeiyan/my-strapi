@@ -49,8 +49,25 @@ async function testPermissions(token) {
       if (api.method === 'GET') {
         response = await axios.get(`${BASE_URL}${api.url}`, config);
       } else if (api.method === 'POST') {
-        const data = api.name.includes('充值') ? { amount: 100 } : 
-                    api.name.includes('提现') ? { amount: 50, address: '0x123...' } : {};
+        let data;
+        if (api.name.includes('USDT充值')) {
+          data = { amount: 100 };  // 自定义API不需要data包装
+        } else if (api.name.includes('USDT提现')) {
+          data = { data: { 
+            amountUSDT: 50, 
+            toAddress: '0x1234567890123456789012345678901234567890',
+            status: 'pending',
+            requestedAt: new Date().toISOString()
+          } };
+        } else if (api.name.includes('AI代币提现')) {
+          data = { data: { 
+            amountAI: 10, 
+            toAddress: '0x1234567890123456789012345678901234567890',
+            status: 'pending'
+          } };
+        } else {
+          data = { data: {} };
+        }
         
         response = await axios.post(`${BASE_URL}${api.url}`, data, config);
       }

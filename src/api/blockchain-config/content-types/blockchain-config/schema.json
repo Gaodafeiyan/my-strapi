@@ -1,0 +1,51 @@
+{
+  "kind": "collectionType",
+  "collectionName": "blockchain_configs",
+  "info": {
+    "singularName": "blockchain-config",
+    "pluralName": "blockchain-configs",
+    "displayName": "BlockchainConfig"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "chain": {
+      "type": "enumeration",
+      "enum": ["BSC", "ETH", "POLYGON"],
+      "default": "BSC",
+      "required": true
+    },
+    "rpcUrl": {
+      "type": "string",
+      "required": true,
+      "default": "https://bsc-dataseed.binance.org/"
+    },
+    "contractAddress": {
+      "type": "string",
+      "required": true
+    },
+    "projectWalletAddress": {
+      "type": "string",
+      "required": true
+    },
+    "lastProcessedBlock": {
+      "type": "biginteger",
+      "default": 0
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "scanInterval": {
+      "type": "integer",
+      "default": 15,
+      "min": 5,
+      "max": 60
+    },
+    "description": {
+      "type": "text"
+    }
+  }
+} 

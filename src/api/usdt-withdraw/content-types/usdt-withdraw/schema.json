@@ -17,7 +17,7 @@
       "target": "plugin::users-permissions.user",
       "inversedBy": "usdt_withdraws"
     },
-    "amountUSDT": {
+    "amount": {
       "type": "decimal",
       "precision": 38,
       "scale": 8,
@@ -46,6 +46,14 @@
     },
     "errorMessage": {
       "type": "text"
+    },
+    "error": {
+      "type": "text"
+    },
+    "asset": {
+      "type": "enumeration",
+      "enum": ["USDT", "AI_TOKEN"],
+      "default": "USDT"
     },
     "chain": {
       "type": "enumeration",

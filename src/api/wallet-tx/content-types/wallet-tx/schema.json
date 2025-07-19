@@ -24,13 +24,33 @@
       "precision": 38,
       "scale": 8
     },
-    "walletStatus": {
-      "type": "enumeration",
-      "enum": ["pending", "success", "fail"]
-    },
     "txHash": {
       "type": "string",
       "unique": true
+    },
+    "block_number": {
+      "type": "biginteger"
+    },
+    "to_address": {
+      "type": "string"
+    },
+    "from_address": {
+      "type": "string"
+    },
+    "gas_used": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8
+    },
+    "gas_price": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["pending", "success", "failed"],
+      "default": "pending"
     },
     "asset": {
       "type": "relation",

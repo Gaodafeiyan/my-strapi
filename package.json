@@ -18,11 +18,17 @@
     "@strapi/plugin-cloud": "5.18.1",
     "@strapi/plugin-users-permissions": "5.18.1",
     "@strapi/strapi": "5.18.1",
+    "@types/node-cron": "^3.0.11",
+    "@types/web3": "^1.2.2",
     "better-sqlite3": "11.3.0",
+    "node-cron": "^4.2.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0",
-    "styled-components": "^6.0.0"
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "styled-components": "^6.0.0",
+    "web3": "^4.16.0"
   },
   "devDependencies": {
     "@types/node": "^20",

@@ -1,0 +1,52 @@
+{
+  "kind": "collectionType",
+  "collectionName": "system_monitors",
+  "info": {
+    "singularName": "system-monitor",
+    "pluralName": "system-monitors",
+    "displayName": "SystemMonitor"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "serviceName": {
+      "type": "enumeration",
+      "enum": ["deposit_listener", "withdraw_broadcaster", "blockchain_monitor"],
+      "required": true
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["running", "stopped", "error"],
+      "default": "stopped"
+    },
+    "lastRunAt": {
+      "type": "datetime"
+    },
+    "nextRunAt": {
+      "type": "datetime"
+    },
+    "processedCount": {
+      "type": "integer",
+      "default": 0
+    },
+    "errorCount": {
+      "type": "integer",
+      "default": 0
+    },
+    "lastError": {
+      "type": "text"
+    },
+    "config": {
+      "type": "json"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "description": {
+      "type": "text"
+    }
+  }
+} 

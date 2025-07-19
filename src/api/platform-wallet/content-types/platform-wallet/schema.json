@@ -47,6 +47,50 @@
     },
     "description": {
       "type": "text"
+    },
+    "qrCode": {
+      "type": "string"
+    },
+    "qrCodeImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "isDefault": {
+      "type": "boolean",
+      "default": false
+    },
+    "minAmount": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8,
+      "default": 0
+    },
+    "maxAmount": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8
+    },
+    "dailyLimit": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8
+    },
+    "totalReceived": {
+      "type": "decimal",
+      "precision": 38,
+      "scale": 8,
+      "default": 0
+    },
+    "transactionCount": {
+      "type": "integer",
+      "default": 0
+    },
+    "lastTransactionAt": {
+      "type": "datetime"
+    },
+    "notes": {
+      "type": "text"
     }
   }
 } 

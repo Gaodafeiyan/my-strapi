@@ -10,8 +10,7 @@ async function testAuth() {
     const registerResponse = await axios.post(`${BASE_URL}/api/auth/local/register`, {
       username: 'testuser2',
       email: 'test2@example.com',
-      password: 'test123456',
-      referralCode: 'user'
+      password: 'test123456'
     });
     
     if (registerResponse.data.jwt) {

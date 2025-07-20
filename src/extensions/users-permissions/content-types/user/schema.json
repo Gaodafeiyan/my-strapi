@@ -1,21 +1,9 @@
 {
   "kind": "collectionType",
-  "collectionName": "up_users",
-  "info": {
-    "name": "user",
-    "description": "",
-    "singularName": "user",
-    "pluralName": "users",
-    "displayName": "User"
-  },
-  "options": {
-    "draftAndPublish": false
-  },
-  "pluginOptions": {
-    "users-permissions": {
-      "collectionName": "up_users"
-    }
-  },
+  "collectionName": "users",
+  "plugin": "users-permissions",
+  "info": { "singularName": "user", "pluralName": "users", "displayName": "User" },
+  "options": { "draftAndPublish": false, "populateCreatorFields": false },
   "attributes": {
     "username": {
       "type": "string",
@@ -59,14 +47,16 @@
       "configurable": false
     },
     "diamondId": {
-      "type": "uid",
+      "type": "string",
       "required": true,
-      "unique": true
+      "unique": true,
+      "maxLength": 9
     },
     "referralCode": {
-      "type": "uid",
+      "type": "string",
       "required": true,
-      "unique": true
+      "unique": true,
+      "maxLength": 9
     },
     "invitedBy": {
       "type": "relation",
@@ -79,78 +69,6 @@
       "relation": "oneToMany",
       "target": "plugin::users-permissions.user",
       "mappedBy": "invitedBy"
-    },
-    "wallet_balance": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::wallet-balance.wallet-balance",
-      "mappedBy": "user"
-    },
-    "wallet_tx": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::wallet-tx.wallet-tx",
-      "mappedBy": "user"
-    },
-    "subscription_orders": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::subscription-order.subscription-order",
-      "mappedBy": "user"
-    },
-    "inviteRewards": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::referral-reward.referral-reward",
-      "mappedBy": "referrer"
-    },
-    "deposit_address": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::deposit-address.deposit-address",
-      "mappedBy": "user"
-    },
-    "withdraw_requests": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::withdraw-request.withdraw-request",
-      "mappedBy": "user"
-    },
-    "ai_token_withdraws": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::ai-token-withdraw.ai-token-withdraw",
-      "mappedBy": "user"
-    },
-    "usdt_withdraws": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::usdt-withdraw.usdt-withdraw",
-      "mappedBy": "user"
-    },
-    "recharge_records": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::recharge-record.recharge-record",
-      "mappedBy": "user"
-    },
-    "ai_token_recharges": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::ai-token-recharge.ai-token-recharge",
-      "mappedBy": "user"
-    },
-    "lottery_spins": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::lottery-spin.lottery-spin",
-      "mappedBy": "user"
-    },
-    "shop_orders": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::shop-order.shop-order",
-      "mappedBy": "user"
     }
   }
 } 

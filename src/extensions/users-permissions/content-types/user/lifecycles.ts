@@ -1,19 +1,12 @@
 import { customAlphabet } from 'nanoid';
 
-const nanoid = customAlphabet('ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz123456789', 9);
+// 0‑9A‑Z a‑z 共 62 个字符，长度固定 9 位
+const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 9);
 
 export default {
-  /**
-   * 自动给用户生成 diamondId / referralCode.
-   */
   async beforeCreate(event) {
-    const { params } = event;
-
-    // 生成唯一邀请码
-    const code = nanoid();
-    params.data.referralCode = code;
-
-    // 生成唯一钻石ID
-    params.data.diamondId = nanoid();
+    // 保证第一次写入就带上字段
+    event.params.data.diamondId = nanoid();
+    event.params.data.referralCode = nanoid();
   },
 }; 

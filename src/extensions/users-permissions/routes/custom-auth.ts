@@ -5,7 +5,7 @@
 export default [
   {
     method: 'POST',
-    path: '/wallet/auth/invite-register',
+    path: '/api/wallet/auth/invite-register',
     handler: 'auth.inviteRegister',
     config: {
       auth: false,

@@ -19,7 +19,7 @@ export default factories.createCoreController('plugin::users-permissions.user', 
       });
 
       // 调用服务处理注册逻辑
-      const result = await strapi.service('api::wallet.auth').inviteRegister({
+      const result = await strapi.service('api::wallet-balance.wallet-balance').inviteRegister({
         username,
         email,
         password,

@@ -5,12 +5,13 @@ let authToken = '';
 
 async function testAuth() {
   try {
-    // 1. 注册用户
+    // 1. 注册用户（使用邀请码）
     console.log('1. 注册用户...');
-    const registerResponse = await axios.post(`${BASE_URL}/api/auth/local/register`, {
-      username: 'testuser2',
-      email: 'test2@example.com',
-      password: 'test123456'
+    const registerResponse = await axios.post(`${BASE_URL}/api/wallet/auth/invite-register`, {
+      username: 'testuser3',
+      email: 'test3@example.com',
+      password: 'test123456',
+      inviteCode: 'user'
     });
     
     if (registerResponse.data.jwt) {
@@ -24,7 +25,7 @@ async function testAuth() {
     // 2. 登录获取token
     console.log('\n2. 登录获取token...');
     const loginResponse = await axios.post(`${BASE_URL}/api/auth/local`, {
-      identifier: 'testuser2',
+      identifier: 'testuser3',
       password: 'test123456'
     });
     

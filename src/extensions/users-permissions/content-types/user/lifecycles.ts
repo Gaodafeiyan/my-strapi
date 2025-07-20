@@ -1,9 +1,19 @@
-import { nanoid } from 'nanoid';
+import { customAlphabet } from 'nanoid';
+
+const nanoid = customAlphabet('ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz123456789', 9);
 
 export default {
+  /**
+   * 自动给用户生成 diamondId / referralCode.
+   */
   async beforeCreate(event) {
-    // 生成唯一 referralCode
-    const code = nanoid(9);            // 例: 'qJX3pZ8kL'
-    event.params.data.referralCode = code;
-  }
+    const { params } = event;
+
+    // 生成唯一邀请码
+    const code = nanoid();
+    params.data.referralCode = code;
+
+    // 生成唯一钻石ID
+    params.data.diamondId = nanoid();
+  },
 }; 

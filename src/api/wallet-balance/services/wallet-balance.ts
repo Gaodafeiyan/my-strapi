@@ -41,12 +41,12 @@ export default ({ strapi }) => ({
     // 验证邀请码
     let invitedBy = null;
     if (inviteCode) {
-      const inviter = await strapi.entityService.findMany('plugin::users-permissions.user', {
-        filters: { referralCode: inviteCode } as any
-      });
+      const inviter = await strapi.db
+        .query('plugin::users-permissions.user')
+        .findOne({ where: { referralCode: inviteCode } });
       
-      if (inviter && inviter.length > 0) {
-        invitedBy = inviter[0].id;
+      if (inviter) {
+        invitedBy = inviter.id;
       } else {
         console.log('邀请码无效，使用默认邀请人');
         // 如果邀请码无效，使用第一个用户作为邀请人
@@ -64,22 +64,27 @@ export default ({ strapi }) => ({
 
     // 生成唯一标识
     const diamondId = nanoid(9);
-    const referralCode = nanoid(9);
 
-    // 创建用户
+    // 创建用户（referralCode会通过lifecycle hook自动生成）
     const user = await strapi.entityService.create('plugin::users-permissions.user', {
       data: {
         username,
         email,
         password,
         diamondId,
-        referralCode,
         invitedBy,
         confirmed: true,
         blocked: false,
         role: 1 // Authenticated role
       }
     });
+
+    // 确保邀请关系正确建立
+    if (invitedBy) {
+      await strapi.entityService.update('plugin::users-permissions.user', user.id, {
+        data: { invitedBy }
+      });
+    }
 
     // 创建钱包余额记录
     await strapi.entityService.create('api::wallet-balance.wallet-balance' as any, {

@@ -8,9 +8,10 @@ async function testInviteRegister() {
   try {
     // 1. 先创建一个用户作为邀请人
     console.log('1. 创建邀请人用户...');
+    const timestamp = Date.now();
     const inviterResponse = await axios.post(`${BASE_URL}/api/auth/local/register`, {
-      username: 'inviter',
-      email: 'inviter@example.com',
+      username: 'inviter' + timestamp,
+      email: 'inviter' + timestamp + '@example.com',
       password: 'test123456'
     });
     
@@ -20,8 +21,8 @@ async function testInviteRegister() {
       // 2. 使用邀请码注册新用户
       console.log('\n2. 使用邀请码注册新用户...');
       const inviteeResponse = await axios.post(`${BASE_URL}/api/wallet/auth/invite-register`, {
-        username: 'invitee',
-        email: 'invitee@example.com',
+        username: 'invitee' + timestamp,
+        email: 'invitee' + timestamp + '@example.com',
         password: 'test123456',
         inviteCode: inviterResponse.data.user.referralCode
       });

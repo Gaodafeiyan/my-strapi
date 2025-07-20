@@ -8,9 +8,10 @@ async function testSimpleInvite() {
   try {
     // 直接测试邀请码注册，使用一个简单的邀请码
     console.log('测试邀请码注册...');
+    const timestamp = Date.now();
     const response = await axios.post(`${BASE_URL}/api/wallet/auth/invite-register`, {
-      username: 'testuser' + Date.now(),
-      email: 'test' + Date.now() + '@example.com',
+      username: 'testuser' + timestamp,
+      email: 'test' + timestamp + '@example.com',
       password: 'test123456',
       inviteCode: 'TEST123'  // 使用一个简单的测试邀请码
     });

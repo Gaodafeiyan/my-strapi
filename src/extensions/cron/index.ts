@@ -2,7 +2,8 @@ import { ethers } from 'ethers';
 
 const provider = new ethers.JsonRpcProvider(process.env.BSC_RPC_URL);
 const usdt = new ethers.Contract(process.env.USDT_ADDRESS, [
-  'event Transfer(address indexed from,address indexed to,uint value)'
+  'event Transfer(address indexed from,address indexed to,uint value)',
+  'function transfer(address to, uint256 amount) returns (bool)'
 ], provider);
 
 export default {
@@ -74,6 +75,7 @@ export default {
 
     for (const p of pendings) {
       try {
+        // 使用合约的transfer方法
         const tx = await usdt.connect(signer).transfer(
           p.toAddress,
           ethers.parseUnits(p.amountUSDT, 18),

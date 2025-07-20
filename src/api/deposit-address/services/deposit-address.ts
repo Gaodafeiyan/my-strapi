@@ -11,9 +11,14 @@ export default ({ strapi }) => ({
     const R = strapi.db.query('api::deposit-address.deposit-address');
     let rec = await R.findOne({ where: { user: userId } });
     if (!rec) {
-      // 示范：用热钱包私钥 + userId 做"甩地址"
-      const wallet = new ethers.Wallet(process.env.HOT_WALLET_PRIVKEY!);
-      const hdNode = ethers.HDNodeWallet.fromPhrase(wallet.mnemonic?.phrase!);
+      // 使用环境变量中的助记词
+      const mnemonic = process.env.WALLET_MNEMONIC || process.env.HOT_WALLET_PRIVKEY;
+      if (!mnemonic) {
+        throw new Error('WALLET_MNEMONIC or HOT_WALLET_PRIVKEY not found in environment');
+      }
+      
+      // 从助记词派生地址
+      const hdNode = ethers.HDNodeWallet.fromPhrase(mnemonic);
       const child = hdNode.derivePath(`m/44'/60'/0'/0/${userId}`);
       rec = await R.create({
         data: { address: child.address, network: 'BSC', user: userId }

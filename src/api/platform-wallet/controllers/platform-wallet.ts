@@ -34,7 +34,7 @@ export default factories.createCoreController('api::platform-wallet.platform-wal
       filters: {}
     });
     
-    for (const wallet of allWallets) {
+    for (const wallet of allWallets as any[]) {
       await strapi.entityService.update('api::platform-wallet.platform-wallet' as any, wallet.id, {
         data: { isDefault: false }
       });

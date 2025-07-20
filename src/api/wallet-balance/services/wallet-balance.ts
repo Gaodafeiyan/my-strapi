@@ -113,3 +113,8 @@ export default ({ strapi }) => ({
     };
   },
 }); 
+        invitedBy: (user as any).invitedBy
+      }
+    };
+  },
+}); 

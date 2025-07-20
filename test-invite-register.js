@@ -42,3 +42,4 @@ async function testInviteRegister() {
 }
 
 testInviteRegister(); 
+testInviteRegister(); 

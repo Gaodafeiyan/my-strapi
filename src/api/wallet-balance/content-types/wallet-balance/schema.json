@@ -26,8 +26,7 @@
     "user": {
       "type": "relation",
       "relation": "oneToOne",
-      "target": "plugin::users-permissions.user",
-      "inversedBy": "wallet_balance"
+      "target": "plugin::users-permissions.user"
     }
   }
 } 

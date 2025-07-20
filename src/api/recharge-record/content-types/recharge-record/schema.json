@@ -14,8 +14,7 @@
     "user": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "plugin::users-permissions.user",
-      "inversedBy": "recharge_records"
+      "target": "plugin::users-permissions.user"
     },
     "amount": {
       "type": "decimal",

@@ -41,8 +41,7 @@
     "user": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "plugin::users-permissions.user",
-      "inversedBy": "ai_token_withdraws"
+      "target": "plugin::users-permissions.user"
     }
   }
 } 

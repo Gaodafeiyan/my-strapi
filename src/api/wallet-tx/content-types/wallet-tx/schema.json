@@ -61,8 +61,7 @@
     "user": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "plugin::users-permissions.user",
-      "inversedBy": "wallet_tx"
+      "target": "plugin::users-permissions.user"
     },
     "shop_orders": {
       "type": "relation",

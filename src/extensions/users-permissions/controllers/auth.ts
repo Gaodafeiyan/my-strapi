@@ -3,15 +3,26 @@
  */
 
 import { factories } from '@strapi/strapi';
+import { customAlphabet } from 'nanoid';
+
+const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 9);
 
 export default factories.createCoreController('plugin::users-permissions.user', ({ strapi }) => ({
   async register(ctx) {
     try {
-      // 1️⃣ 调用 users-permissions 自带 service 创建账户
+      // 生成唯一ID
+      const diamondId = nanoid();
+      const referralCode = nanoid();
+
+      // 1️⃣ 调用 users-permissions 自带 service 创建账户，包含生成的字段
       const result = await strapi
         .plugin('users-permissions')
         .service('user')
-        .add(ctx.request.body);
+        .add({
+          ...ctx.request.body,
+          diamondId,
+          referralCode
+        });
 
       // 2️⃣ 创建钱包余额记录
       await strapi.entityService.create('api::wallet-balance.wallet-balance' as any, {

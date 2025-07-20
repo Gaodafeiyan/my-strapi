@@ -1,4 +1,5 @@
 import Web3 from 'web3';
+// @ts-ignore
 import { Strapi } from '@strapi/strapi';
 
 // USDT合约地址 (BSC网络)
@@ -127,8 +128,8 @@ class BSCWithdrawBroadcaster {
       const result = await this.broadcastWithdraw(withdraw, withdrawAmount);
       
       if (result.success) {
-        await this.markWithdrawSuccess(withdraw.id, result.txHash);
-        await this.sendSocketNotification(withdraw.user.id, 'success', withdraw.amount, result.txHash);
+        await this.markWithdrawSuccess(withdraw.id, result.txHash.toString());
+        await this.sendSocketNotification(withdraw.user.id, 'success', withdraw.amount, result.txHash.toString());
         console.log(`✅ 提现成功: 交易哈希 ${result.txHash}`);
       } else {
         await this.markWithdrawFailed(withdraw.id, result.error);

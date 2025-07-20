@@ -1,4 +1,5 @@
 import Web3 from 'web3';
+// @ts-ignore
 import { Strapi } from '@strapi/strapi';
 
 // USDT合约地址 (BSC网络)
@@ -80,7 +81,7 @@ class BSCDepositListener {
       
       if (this.lastProcessedBlock === 0) {
         // 第一次运行，从最新区块开始
-        this.lastProcessedBlock = latestBlock - 1;
+        this.lastProcessedBlock = Number(latestBlock) - 1;
       }
 
       const fromBlock = this.lastProcessedBlock + 1;
@@ -127,7 +128,7 @@ class BSCDepositListener {
         await this.processTransferEvent(log);
       }
 
-      this.lastProcessedBlock = toBlock;
+      this.lastProcessedBlock = Number(toBlock);
       console.log('✅ BSC充值监听完成');
 
     } catch (error) {

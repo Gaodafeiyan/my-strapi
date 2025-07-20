@@ -51,6 +51,11 @@ export default factories.createCoreController('api::wallet-balance.wallet-balanc
   /** GET /wallet-balances/deposit-address */
   async getDepositAddress(ctx) {
     try {
+      // 检查用户是否已认证
+      if (!ctx.state.user || !ctx.state.user.id) {
+        return ctx.unauthorized('用户未认证');
+      }
+
       const userId = ctx.state.user.id;
       const addr = await strapi.service('api::deposit-address.deposit-address')
         .getOrCreate(userId);

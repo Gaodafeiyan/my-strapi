@@ -1,5 +1,4 @@
 import { ethers } from 'ethers';
-import Decimal from 'decimal.js';
 
 const provider = new ethers.JsonRpcProvider(process.env.BSC_RPC_URL);
 const usdt = new ethers.Contract(process.env.USDT_ADDRESS, [
@@ -15,32 +14,51 @@ export default {
     if (toBlock <= last) return;
 
     const logs = await usdt.queryFilter('Transfer', last + 1, toBlock);
-    const addresses = logs.map(l => l.args![1].toLowerCase());
+    const iface = new ethers.Interface([
+      'event Transfer(address indexed from,address indexed to,uint value)'
+    ]);
+    
+    const parsed = logs
+      .map(l => {
+        try {
+          return iface.parseLog(l);
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean);
+
+    const addresses = parsed.map(p => p!.args[1].toLowerCase());
     const D = strapi.db.query('api::deposit-address.deposit-address');
     const addrMap = await D.findMany({ where: { address: { $in: addresses } } });
 
     for (const log of logs) {
-      const dst = log.args![1].toLowerCase();
-      const rec = addrMap.find(a => a.address.toLowerCase() === dst);
-      if (!rec) continue; // 不是我们的地址
+      try {
+        const parsed = iface.parseLog(log);
+        const dst = parsed.args[1].toLowerCase();
+        const rec = addrMap.find(a => a.address.toLowerCase() === dst);
+        if (!rec) continue; // 不是我们的地址
 
-      const amount = ethers.formatUnits(log.args!.value, 18);
-      const txHash = log.transactionHash;
+        const amount = ethers.formatUnits(parsed.args[2], 18);
+        const txHash = log.transactionHash;
 
-      // 幂等检查
-      const exists = await strapi.db.query('api::recharge-record.recharge-record')
-        .findOne({ where: { txHash } });
-      if (exists) continue;
+        // 幂等检查
+        const exists = await strapi.db.query('api::recharge-record.recharge-record')
+          .findOne({ where: { txHash } });
+        if (exists) continue;
 
-      // 1) 写充值记录
-      await strapi.db.query('api::recharge-record.recharge-record')
-        .create({ data: { user: rec.user, amountUSDT: amount, txHash, status: 'success' } });
+        // 1) 写充值记录
+        await strapi.db.query('api::recharge-record.recharge-record')
+          .create({ data: { user: rec.user, amountUSDT: amount, txHash, status: 'success' } });
 
-      // 2) 加余额 + 流水
-      await strapi.service('api::wallet-balance.wallet-balance')
-        .add(rec.user, amount, { txType: 'deposit', direction: 'in', txHash, status: 'success' });
+        // 2) 加余额 + 流水
+        await strapi.service('api::wallet-balance.wallet-balance')
+          .add(rec.user, amount, { txType: 'deposit', direction: 'in', txHash, status: 'success' });
 
-      strapi.log.info(`USDT deposit ${amount} => user ${rec.user}`);
+        strapi.log.info(`USDT deposit ${amount} => user ${rec.user}`);
+      } catch (error) {
+        strapi.log.error('Error processing log:', error);
+      }
     }
     await store.set({ key: 'lastBlock', value: toBlock });
   },

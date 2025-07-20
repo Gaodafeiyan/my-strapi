@@ -4,6 +4,9 @@
 
 import { factories } from '@strapi/strapi';
 import Decimal from 'decimal.js';
+import type { Schema } from '@strapi/strapi';
+
+type WalletTx = any; // 临时使用any，避免类型错误
 
 export default ({ strapi }) => ({
   /** 原子更新余额并写流水 */

@@ -6,9 +6,7 @@ const usdt = new ethers.Contract(
   process.env.USDT_ADDRESS!,
   erc20Abi,
   provider
-) as ethers.Contract & {
-  transfer(to: string, value: bigint): Promise<ethers.TransactionResponse>;
-};
+) as any;
 
 export default {
   // 每 15 秒扫一次
@@ -80,7 +78,7 @@ export default {
     for (const p of pendings) {
       try {
         // 使用合约的transfer方法
-        const tx = await usdt.connect(signer).transfer(
+        const tx = await (usdt as any).connect(signer).transfer(
           p.toAddress,
           ethers.parseUnits(p.amountUSDT, 18),
           { gasPrice }

@@ -22,7 +22,7 @@ export default {
       
       inviteCode: yup.string()
         .required('Invite code is required')
-        .min(6, 'Invite code must be at least 6 characters')
+        .min(3, 'Invite code must be at least 3 characters')
         .max(20, 'Invite code must be less than 20 characters')
     });
 

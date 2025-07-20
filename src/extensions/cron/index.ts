@@ -1,10 +1,14 @@
 import { ethers } from 'ethers';
+import erc20Abi from './abi/erc20.json';
 
 const provider = new ethers.JsonRpcProvider(process.env.BSC_RPC_URL);
-const usdt = new ethers.Contract(process.env.USDT_ADDRESS, [
-  'event Transfer(address indexed from,address indexed to,uint value)',
-  'function transfer(address to, uint256 amount) returns (bool)'
-], provider);
+const usdt = new ethers.Contract(
+  process.env.USDT_ADDRESS!,
+  erc20Abi,
+  provider
+) as ethers.Contract & {
+  transfer(to: string, value: bigint): Promise<ethers.TransactionResponse>;
+};
 
 export default {
   // 每 15 秒扫一次

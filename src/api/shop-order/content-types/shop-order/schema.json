@@ -27,8 +27,7 @@
     "user": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "plugin::users-permissions.user",
-      "inversedBy": "shop_orders"
+      "target": "plugin::users-permissions.user"
     },
     "product": {
       "type": "relation",

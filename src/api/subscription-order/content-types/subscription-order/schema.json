@@ -21,8 +21,7 @@
     "user": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "plugin::users-permissions.user",
-      "inversedBy": "subscription_orders"
+      "target": "plugin::users-permissions.user"
     },
     "quantity": {
       "type": "integer",
